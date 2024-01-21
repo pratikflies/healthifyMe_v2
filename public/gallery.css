@@ -1,0 +1,87 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: sans-serif;
+  background-image: url("https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80");
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+h1 {
+  color: papayawhip;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 70px;
+}
+
+.grid-container {
+  font-size: 18px;
+  color: peachpuff;
+  columns: 5 200px;
+  column-gap: 1.5rem;
+  width: 90%;
+  margin: 0 auto;
+}
+.grid-container div {
+  width: 150px;
+  margin: 0 1.5rem 1.5rem 0;
+  display: inline-block;
+  width: 100%;
+  border: solid 2px black;
+  padding: 5px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  transition: all 0.25s ease-in-out;
+}
+.grid-container div:hover img {
+  filter: grayscale(0);
+}
+.grid-container div:hover {
+  border-color: coral;
+}
+.grid-container div img {
+  width: 100%;
+  filter: grayscale(100%);
+  border-radius: 5px;
+  transition: all 0.25s ease-in-out;
+}
+.grid-container div p {
+  margin: 5px 0;
+  padding: 0;
+  text-align: center;
+  font-style: italic;
+}
+#upload-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+#upload-form input[type="file"] {
+  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-left: -10px;
+}
+#upload-form textarea {
+  margin-bottom: 10px;
+}
+#upload-form button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #ff6347;
+  color: #fff;
+  border-style: solid;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+#upload-form button:hover {
+  background-color: #ff4c35;
+}
+
+#dashboard {
+  margin-left: 65px;
+}

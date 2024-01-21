@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Login</title>
+    <link rel="shortcut icon" type="image/png" href="../icon.png" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/errorMessage.css" />
+    <link rel="stylesheet" href="/login.css" />
+    <% if (errorMessage) { %>
+    <script defer src="/authentication/errorMessage.js"></script>
+    <% } %>
+  </head>
+  <body>
+    <div class="topnav">
+      <a href="/">Home</a>
+      <a class="active" href="/login">Login</a>
+      <a href="/signup">Signup</a>
+      <a href="/contact-us">Contact Us</a>
+    </div>
+    <% if (errorMessage) { %>
+    <div id="error-notification" class="error-notification">
+      <span id="health-bar" class="health-bar"></span>
+      <%= errorMessage %>
+    </div>
+    <% } %>
+    <div class="background">
+      <div class="shape"></div>
+      <div class="shape"></div>
+    </div>
+    <form action="/login" method="POST">
+      <h3>Login to HealthifyMe</h3>
+
+      <label for="email">Email</label>
+      <input
+        type="text"
+        placeholder="Email"
+        name="email"
+        id="email"
+        value="<%= oldInput.email %>"
+      />
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        placeholder="Password"
+        name="password"
+        id="password"
+        value="<%= oldInput.password %>"
+      />
+
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button>Login</button>
+      <button
+        class="forget"
+        type="button"
+        onclick="window.location.href = '/reset'"
+      >
+        Forgot Password?
+      </button>
+    </form>
+
+    <script>
+      // JavaScript to handle button click and redirect
+      document.querySelector(".forget").addEventListener("click", function () {
+        window.location.href = "/reset";
+      });
+    </script>
+  </body>
+</html>

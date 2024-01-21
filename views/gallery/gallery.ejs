@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gallery</title>
+    <link rel="shortcut icon" type="image/png" href="../icon.png" />
+    <link rel="stylesheet" href="/errorMessage.css" />
+    <link rel="stylesheet" href="/gallery.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+      rel="stylesheet"
+    />
+    <% if (errorMessage) { %>
+    <script defer src="/gallery/errorMessage.js"></script>
+    <% } %>
+    <script>
+      let images = <%- JSON.stringify(images) %>;
+    </script>
+  </head>
+  <body>
+    <% if (errorMessage) { %>
+    <div id="error-notification" class="error-notification">
+      <span id="health-bar" class="health-bar"></span>
+      <%= errorMessage %>
+    </div>
+    <% } %>
+    <h1>Feel like reflecting on your Fitness Journey?</h1>
+    <form
+      id="upload-form"
+      action="/admin/add-image"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <span
+        ><label for="image" style="margin-right: 10px">Photo:</label>
+        <input type="file" id="image-upload" name="image"
+      /></span>
+      <label for="story" style="margin-bottom: 8px">Your Story: </label>
+      <textarea
+        name="story"
+        id="story-input"
+        rows="5"
+        cols="35"
+        placeholder="Share your story..."
+        value="<%= story %>"
+      ></textarea>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <span
+        ><button type="submit">Post</button
+        ><button
+          id="dashboard"
+          type="button"
+          onclick="window.location.href = '/admin/dashboard'"
+        >
+          Dashboard
+        </button></span
+      >
+    </form>
+    <!-- partial:index.partial.html -->
+    <h1>Share your story to inspire others...</h1>
+    <div class="grid-container" id="gallery-container"></div>
+    <!-- partial -->
+    <script>
+      // JavaScript to handle button click and redirect
+      document
+        .querySelector("#dashboard")
+        .addEventListener("click", function () {
+          window.location.href = "/admin/dashboard";
+        });
+    </script>
+    <script src="/gallery/gallery.js" defer></script>
+  </body>
+</html>

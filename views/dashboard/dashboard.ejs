@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="shortcut icon" type="image/png" href="../icon.png" />
+    <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Belanosima&family=Caveat:wght@600&family=Urbanist:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="/dashboard.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <form action="/admin/HealthifyMe" method="GET">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">Go To Map</button>
+      </form>
+      <form action="/admin/user-details" method="GET">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">Edit Profile</button>
+      </form>
+      <form action="/logout" method="GET">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">Logout</button>
+      </form>
+      <form action="/admin/payment" method="GET">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">Donate (NA)</button>
+      </form>
+      <form action="/admin/gallery" method="GET">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">HealthifyMe Gallery</button>
+      </form>
+      <form action="/admin/delete-profile" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button style="background-color: red" type="submit">
+          Delete Profile
+        </button>
+      </form>
+    </div>
+    <div class="my-div">
+      <div class="content">
+        <div style="background-color: aquamarine" class="header">
+          <h1>Motivational Quote</h1>
+        </div>
+        <div style="background-color: pink" class="chart-container">
+          <div class="chart">
+            <h2>Analysis</h2>
+            <canvas id="pieChart"></canvas>
+          </div>
+          <div class="planned-workouts">
+            <h2>Upcoming Workout(s)</h2>
+            <ul id="plannedWorkoutsList">
+              <!-- Planned workout details will be dynamically added here-->
+            </ul>
+          </div>
+        </div>
+        <div style="background-color: pink" class="dashboard">
+          <div class="workouts">
+            <h2>Recent Workout(s)</h2>
+            <ul id="workoutList">
+              <!-- Workout details will be dynamically added here -->
+            </ul>
+          </div>
+          <div class="progress-chart">
+            <h2>Progress</h2>
+            <div><canvas id="progressChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-sidebar">
+      <div class="stats">
+        <h2>
+          User Info
+          <span id="imageContainer"></span>
+        </h2>
+        <p>Name: <span id="fullname"></span></p>
+        <p>Age: <span id="age"></span></p>
+        <p>Gender: <span id="gender"></span></p>
+        <p>BMI: <span id="bmi"></span></p>
+        <p>My Goal: <span id="goal"></span></p>
+        <p>Level: <span id="level"></span></p>
+        <h2>Statistics</h2>
+        <p>Total Workouts: <span id="totalWorkouts"></span></p>
+        <p>Upcoming Workouts: <span id="upcomingWorkouts"></span></p>
+        <p>Total Distance Covered: <span id="totalDistance"></span></p>
+        <p>Total Time Spent: <span id="totalTime"></span></p>
+        <p>Calories Burnt: <span id="calories"></span></p>
+        <h2>Our Suggestion</h2>
+        <p id="message">Be you.</p>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      let fullname = '<%= fullname %>';
+      let gender = '<%= gender %>';
+      let age = '<%= age %>';
+      let weight = '<%= weight %>';
+      let height = '<%= height %>';
+      let goal = '<%= goal %>';
+      let runningCount = '<%= runningCount %>';
+      let cyclingCount = '<%= cyclingCount %>';
+      let swimmingCount = '<%= swimmingCount %>';
+      let recentWorkoutsArray = <%- JSON.stringify(recentWorkoutsArray) %>;
+      let upcomingWorkoutsArray = <%- JSON.stringify(upcomingWorkoutsArray) %>;
+      let upcomingWorkoutsCount = '<%= upcomingWorkoutsCount %>';
+      let totalWorkoutsCount = '<%= totalWorkoutsCount %>';
+      let totalDistance = '<%= totalDistance %>';
+      let totalTime = '<%= totalTime %>';
+      let csrfToken = '<%= csrfToken %>';
+    </script>
+    <script src="/dashboard/dashboard.js"></script>
+  </body>
+</html>

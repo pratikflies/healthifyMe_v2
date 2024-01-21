@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="shortcut icon" type="image/png" href="../icon.png" />
+
+    <meta name="description" content="HealthifyMe-Javascript" />
+    <meta property="og:title" content="HealthifyMe with OOP" />
+    <meta property="og:description" content="HealthifyMe with OOP" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script
+      defer
+      src="https://kit.fontawesome.com/b3b298ed40.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <link rel="stylesheet" href="/admin.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script>
+      let currWorkouts = <%- JSON.stringify(workouts) %>;
+      let csrfToken = '<%= csrfToken %>';
+      let user_email = '<%= userEmail %>';
+    </script>
+    <script
+      defer
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""
+    ></script>
+    <script defer src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script defer src="/admin/adminScript.js"></script>
+    <title>HealthifyMe: Plan Your Workouts</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="button-container">
+      <!--logout button-->
+      <form action="/logout" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit" class="button">Logout</button>
+      </form> 
+      <!--reset button-->
+      <button type="submit" class="button" id="reset-button" style="background-color:#FF0000">Reset</button>
+      <!--adding button for payment link-->
+      <form action="/admin/dashboard" method="get">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit" class="button">Dashboard</button>
+      </form> 
+    </div>
+      <br />
+      <img src="../logo.png" alt="Logo" class="logo" />
+      <div class="custom__btns dropdown hidden">
+        <button class="custom__btn btn--filter">Filter By</button>
+        <div class="dropdown-content">
+          <a href="#" data-option="running">Running 🏃‍♂️</a>
+          <a href="#" data-option="cycling">Cycling 🚴</a>
+          <a href="#" data-option="swimming">Swimming 🏊‍♀️</a>
+          <a href="#" data-option="show-all">Show All</a>
+        </div>
+      </div>
+      <ul class="workouts">
+        <form class="form hidden">
+          <div class="form__row">
+            <label class="form__label">Type</label>
+            <select class="form__input form__input--type">
+              <option value="running">Running 🏃‍♂️</option>
+              <option value="cycling">Cycling 🚴</option>
+              <option value="swimming">Swimming 🏊‍♀️</option>
+            </select>
+          </div>
+          <div class="form__row">
+            <label class="form__label">Distance</label>
+            <input class="form__input form__input--distance" placeholder="km" />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Duration</label>
+            <input
+              class="form__input form__input--duration"
+              placeholder="min"
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Cadence</label>
+            <input
+              class="form__input form__input--cadence"
+              placeholder="step/min"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Elev Gain</label>
+            <input
+              class="form__input form__input--elevation"
+              placeholder="meters"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Strokes</label>
+            <input
+              class="form__input form__input--strokes"
+              placeholder="strokes/min"
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Date</label>
+            <input type="datetime-local" id="datetime-input"
+              class="form__input"
+            />
+          </div>
+          <button class="form__btn">OK</button>
+        </form>
+      </ul>
+
+      <div class="controls">
+        <button class="show__sort__btns">Sort</button>
+        
+      </div>
+      
+      <div class="sort__buttons__container zero__height">
+        <button data-type ="date" class="sort__button"><span class="workout__icon">&#128198</span>  <span class="arrow">&#129045</span></button>
+        <button data-type ="distance" class="sort__button"><span class="workout__icon">🏃‍♂️</span> <span class="arrow">&#129045</span></button>
+        <button data-type ="duration" class="sort__button"><span class="workout__icon">⏱</span> <span class="arrow">&#129045</span></button>
+        
+      </div>
+      <hr class="sort__devider">
+
+      <p class="copyright">
+        Your personal fitness tracking app built by <a class="Github Link" target="_blank" href="https://github.com/SauravM307">Saurav</a> and <a class="Github Link" target="_blank" href="https://github.com/pratikflies">Pratik</a>.
+      </p>
+    </div>
+    <div id="map"></div>
+  </body>
+</html>
