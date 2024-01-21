@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -8,14 +8,15 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
 const cors = require("cors");
+require('dotenv').config();
 
-//importing routes;
+// importing routes
 const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
 const User = require("./models/user");
 
 const MONGODB_URI =
-  "mongodb+srv://pratik16082001:PRAtim123@cluster0.8l9b2qc.mongodb.net/healthifyMe";
+  `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.8l9b2qc.mongodb.net/healthifyMe`;
 
 const app = express();
 const store = new MongoDBStore({
@@ -26,17 +27,17 @@ const store = new MongoDBStore({
 const csrfProtection = csrf();
 
 const fileStorage = multer.diskStorage({
-  //path;
-  destination: (req, file, cb) => {
+  // path
+  destination: (_req, _file, cb) => {
     cb(null, "images");
   },
-  //filename;
-  filename: (req, file, cb) => {
+  // filename
+  filename: (_req, file, cb) => {
     cb(null, new Date().getTime() + "-" + file.originalname);
   },
 });
 
-const fileFilter = (req, file, cb) => {
+const fileFilter = (_req, file, cb) => {
   if (
     file.mimetype === "image/png" ||
     file.mimetype === "image/jpg" ||
@@ -46,7 +47,7 @@ const fileFilter = (req, file, cb) => {
   else cb(null, false);
 };
 
-//setting views so that my express app knows where and what to look for;
+// setting views so that my express app knows where and what to look for;
 app.set("view engine", "ejs");
 app.set("views", "views");
 
@@ -75,7 +76,7 @@ app.use(flash());
 app.use(cors());
 
 //attaching user to the request, user fetched from current session;
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   if (!req.session.user) {
     return next();
   }
@@ -84,7 +85,7 @@ app.use((req, res, next) => {
       req.user = user;
       next();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.error(err));
 });
 
 app.use((req, res, next) => {
@@ -93,17 +94,17 @@ app.use((req, res, next) => {
   next();
 });
 
-//routes/middleware
+// routes/middleware
 app.use("/admin", adminRoutes);
 app.use(authRoutes);
 
 //connecting to database;
 mongoose
   .connect(MONGODB_URI)
-  .then((result) => {
-    console.log("Connected!");
-    app.listen(4000);
+  .then((_result) => {
+    console.log("Connected to database ❤️");
+    app.listen(3001);
   })
   .catch((err) => {
-    console.log(err);
+    console.error("Failed to connect to database: ", err);
   });
