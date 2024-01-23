@@ -300,9 +300,18 @@ a:visited {
 
 /* MAP */
 #map {
+  display: flex;
   flex: 1;
   height: 100%;
   background-color: var(--color-light--1);
+  align-items: center;
+  justify-content: center;
+  font-size: large;
+  font-family: Verdana, Geneva, Tahoma, sans-serif; 
+  font-weight: 500;
+  text-decoration: underline;
+  color: #ffb545;
+  background-color: black;
 }
 
 /* Popup width is defined in JS using options */
