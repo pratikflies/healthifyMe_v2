@@ -8,6 +8,26 @@ import dynamic from "next/dynamic";
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { Button } from "@/components/button";
+import { IconSpinner } from "@/components/icons";
+import RunningComponent from "@/components/running";
+
+type Workout = {
+    cadence?: number;
+    elevationGain?: number;
+    pace?: number;
+    speed?: number;
+    clicks: number;
+    coords: {
+        lat: number;
+        lng: number;
+    };
+    date: string;
+    description: string;
+    distance: number;
+    duration: number;
+    id: string;
+    type: string;
+};
 
 const Map = dynamic(() => import("@/components/map"),
     {
@@ -17,6 +37,7 @@ const Map = dynamic(() => import("@/components/map"),
 );
 
 const Page = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const [userLocation, setUserLocation] = useState({
         lat: 22.6503867,
         lng: 88.434807,
@@ -24,11 +45,14 @@ const Page = () => {
     });
     const [isMapReady, setIsMapReady] = useState(false);
     const [isFormVisible, setIsFormVisible] = useState(false);
+    const [workoutType, setWorkoutType] = useState("running");
     const [clickedCoords, setClickedCoords] = useState({});
     const [distance, setDistance] = useState("");
     const [duration, setDuration] = useState("");
     const [cadence, setCadence] = useState("");
     const [elevationGain, setElevationGain] = useState("");
+    const [workouts, setWorkouts] = useState<Workout[]>([]);
+    const [workoutComponents, setWorkoutComponents] = useState<JSX.Element[]>([]);
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -44,64 +68,72 @@ const Page = () => {
         });
     }, []);
 
+    const renderWorkout = (workout: Workout) => {
+       if (workout.type === "running") return <RunningComponent workout={workout} />
+       return <></>;
+    };
+
+    const handleWorkoutTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setWorkoutType(e.target.value);
+    };
+
+    const validation = (formData: any) => {
+        // setting any data type because: NaN of one/many fields is a possibilty
+        const validateCadence = isFinite(formData.cadence) && formData.cadence > 0;
+        const validateElevationGain = isFinite(formData.elevationGain);
+
+        return (validateCadence || validateElevationGain) 
+            && (formData.distance > 0 
+            && formData.duration > 0);
+    };
+
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault();
-        console.log(clickedCoords, distance, duration, cadence);
-        // setIsLoading(true);
-        // const isValidate = validation(email, password);
+        setIsLoading(true);
 
-        // if (isValidate) {
-        // const data = {
-        //     email: email,
-        //     password: password
-        // };
+        const formData = {
+            type: workoutType,
+            coords: clickedCoords,
+            distance: Number(distance),
+            duration: Number(duration),
+            cadence: Number(cadence),
+            elevationGain: Number(elevationGain),
+        };
 
-        // try {
-        //     const response = await fetch(
-        //     `${process.env.NEXT_PUBLIC_EXPRESS_API_URL}/login`,
-        //     {
-        //         method: "POST",
-        //         body: JSON.stringify(data),
-        //         headers: {
-        //         "Content-Type": "application/json"
-        //         }
-        //     }
-        //     );
+        // validate form data
+        const isValidate = validation(formData);
 
-        //     if (response.ok) {
-        //     const responseData = await response.json();
-        //     if (responseData.token) {
-        //         setToken(responseData.token);
-        //         if (typeof window !== "undefined") {
-        //         localStorage.setItem("token", responseData.token);
-        //         }
+        if (isValidate) {
+            try {
+                const response = await fetch(
+                    "http://localhost:3001/add-workout",
+                {
+                    method: "POST",
+                    body: JSON.stringify(formData),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+                );
 
-        //         Cookie.set("token", responseData.token);
-        //         Cookie.set("isAdmin", responseData.isAdmin);
-        //         setAdmin(responseData.isAdmin);
-
-        //         // alert("Login successfully");
-        //         // window.location.href = "/";
-        //         router.refresh();
-        //         router.push("/");
-
-        //     } else {
-        //         toast("what?");
-        //     }
-        //     } else {
-        //     throw new Error("Network response was not ok");
-        //     }
-        // } catch (error) {
-        //     console.error("Error fetching data:", error);
-        //     toast.error("Account does not exist, please create one.");
-        // }
-
-        // setIsLoading(false);
-        // } else {
-        // alert("Please enter a valid email and password");
-        // setIsLoading(false);
-        // }
-      }
+                if (response.ok) {
+                    const responseWorkout: Workout = await response.json();
+                    setWorkouts([...workouts, responseWorkout]); // Add object to workout array
+                    //this._renderWorkoutMarker(workout); // Render workout on map as marker
+                    const workoutComponent = renderWorkout(responseWorkout); 
+                    setWorkoutComponents([...workoutComponents, workoutComponent]); // render workout on map
+                    setIsFormVisible(false); // hide the form
+                } else throw new Error("Bad network response!");
+            } catch (error) {
+                console.error("Something went wrong while processing your request!", error);
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+            console.error("Please enter valid details!");
+            setIsLoading(false);
+        }
+    }
 
     return (
         <>
@@ -125,7 +157,11 @@ const Page = () => {
                     {isFormVisible && (<form className="form" onSubmit={onSubmit}>
                         <div className="form__row">
                             <Label className="form__label">Type</Label>
-                            <select className="form__input form__input--type">
+                            <select 
+                                className="form__input form__input--type"
+                                value={workoutType}
+                                onChange={handleWorkoutTypeChange}
+                            >
                                 <option value="running">Running</option>
                                 <option value="cycling">Cycling</option>
                             </select>
@@ -137,6 +173,7 @@ const Page = () => {
                                 placeholder="km"
                                 required
                                 onChange={e => setDistance(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="form__row">
@@ -146,6 +183,7 @@ const Page = () => {
                                 placeholder="min"
                                 required
                                 onChange={e => setDuration(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
 
@@ -156,6 +194,7 @@ const Page = () => {
                                 placeholder="steps/min"
                                 required
                                 onChange={e => setCadence(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="form__row form__row--hidden">
@@ -165,10 +204,19 @@ const Page = () => {
                                 id="elevationGain"
                                 placeholder="metres"
                                 onChange={e => setElevationGain(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
-                        <Button className="form__btn">OK</Button>
+                        <Button disabled={isLoading}>
+                            {isLoading && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
+                            OK
+                        </Button>
                     </form>)}
+                    {workoutComponents.map((workoutComponent, index) => (
+                        <React.Fragment key={index}>
+                            {workoutComponent}
+                        </React.Fragment>
+                    ))}
                 </ul>
 
                 <p className="copyright">

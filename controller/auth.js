@@ -3,6 +3,13 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const nodemailer = require("nodemailer");
 const { validationResult } = require("express-validator");
+const { WorkoutFactory } = require("../data-engine/workoutFactory");
+
+exports.addWorkout = (req, res, next) => {
+  const {type, coords, distance, duration, cadence, elevationGain} = req.body;
+  const workout = WorkoutFactory.getWorkout({ type, coords, distance, duration, cadence, elevationGain });
+  res.json(workout);
+};
 
 //directly using nodemailer to send mails;
 const transporter = nodemailer.createTransport({

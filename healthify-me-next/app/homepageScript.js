@@ -241,10 +241,6 @@ class App {
           <span class="workout__value">${workout.duration}</span>
           <span class="workout__unit">min</span>
         </div>
-    `;
-
-    if (workout.type === 'running')
-      html += `
         <div class="workout__details">
           <span class="workout__icon">⚡️</span>
           <span class="workout__value">${workout.pace.toFixed(1)}</span>
