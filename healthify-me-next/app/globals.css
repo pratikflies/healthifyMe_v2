@@ -75,10 +75,24 @@ a:visited {
   overflow-y: scroll;
   overflow-x: hidden;
   margin-bottom: 1rem;
+  scrollbar-width: thin; 
 }
 
 .workouts::-webkit-scrollbar {
-  width: 0;
+  width: 5px;
+}
+
+.workouts::-webkit-scrollbar-track {
+  background: #2d3439;
+}
+
+.workouts::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 100px;
+}
+
+.workouts::-webkit-scrollbar-thumb:hover {
+  background: white;
 }
 
 .workout {

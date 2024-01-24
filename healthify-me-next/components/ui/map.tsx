@@ -5,15 +5,7 @@ import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-
-type mapProps = {
-  userLocation: {
-    lat: number;
-    lng: number;
-    zoomLevel: number;
-  };
-  onMapClick: (latlng: { lat: number; lng: number }) => void;
-};
+import { mapProps } from "@/lib/types";
 
 const MapClickHandler = ({ onMapClick }: any) => {
   useMapEvents({
