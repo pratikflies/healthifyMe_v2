@@ -2,13 +2,23 @@
 
 import React from "react";
 import Link from "next/link";
+import { SidebarBodyType } from "@/lib/types";
 
-export default function SidebarHeaderComponent() {
+export default function SidebarHeaderComponent({ setSidebarBody }: SidebarBodyType ) {
+    const handleLoginClick = (type: string) => {
+        setSidebarBody(type);
+    };
+
     return (
         <div>
             <p className="intro">
                 {`You are currently using a demo version of the app. To gain access to the full version, `}
-                <Link href="/login" className="Github Link">Login</Link>{` or `}
+                <button 
+                    onClick={() => handleLoginClick("login")}
+                    className="Github Link"
+                >
+                    Login
+                </button>
                 <Link href="/signup" className="Github Link">Signup</Link>.{` In case you are facing problems, `}
                 <Link href="/contact-us" className="Github Link">Contact Us</Link>.
             </p>

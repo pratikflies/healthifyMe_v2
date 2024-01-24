@@ -6,6 +6,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import SidebarHeaderComponent from "@/components/sidebar-header";
 import SidebarBodyComponent from "@/components/sidebar-body";
+import SidebarLoginComponent from "@/components/sidebar-login";
 import SidebarFooterComponent from "@/components/sidebar-footer";
 import { LatLng, Workout, UserLocationType } from "@/lib/types";
 
@@ -29,6 +30,7 @@ const Page = () => {
     });
     const [isMapReady, setIsMapReady] = useState<boolean>(false);
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+    const [sidebarBody, setSidebarBody] = useState<string>("workouts");
     const [workoutType, setWorkoutType] = useState<string>("running");
     const [clickedCoords, setClickedCoords] = useState<LatLng>({
         lat: DEFAULT_LAT,
@@ -65,8 +67,11 @@ const Page = () => {
                     height={300} 
                     className="logo"
                 />
-                <SidebarHeaderComponent />
-                <SidebarBodyComponent 
+                <SidebarHeaderComponent 
+                    setSidebarBody={setSidebarBody}
+                />
+                {sidebarBody === "login" && <SidebarLoginComponent />}
+                {sidebarBody === "workouts" && (<SidebarBodyComponent 
                     isLoading={isLoading}
                     setIsLoading={setIsLoading}
                     isFormVisible={isFormVisible}
@@ -86,7 +91,7 @@ const Page = () => {
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}
-                />
+                />)}
                 <SidebarFooterComponent />
             </div>
 

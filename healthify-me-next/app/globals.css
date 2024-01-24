@@ -69,6 +69,96 @@ a:visited {
   font-weight: 600;
 }
 
+.Github.Link {
+  color: var(--color-brand--1);
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline; 
+  font-weight: 600;
+}
+
+.login-headline {
+  margin-top: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  font-weight: 600;
+  font-size: 22px;
+}
+
+.login-form-container {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  justify-content: center;
+  padding: 2rem;
+  background-color: inherit;
+  border-radius: 5px;
+  width: 100%;
+  margin: 2rem auto;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input {
+  padding: 0.8rem 1rem;
+  font-size: 1.4rem;
+  border-radius: 5px;
+  border: 0.1px solid white;
+  background-color: var(--color-dark--1);
+  color: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-width: 1.5px;
+  border-color: var(--color-brand--1);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.show-password {
+  margin-top: 1rem;
+}
+
+.show-password input[type="checkbox"] {
+  width: 11px;
+  height: 11px;
+}
+
+.show-password-label {
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+.form-button {
+  padding: 0.8rem 1rem;
+  font-size: 1.6rem;
+  color: black;
+  background-color: var(--color-brand--1);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.form-button:hover {
+  background-color: #cc9037;
+}
+
 .workouts {
   list-style: none;
   height: 50vh;
