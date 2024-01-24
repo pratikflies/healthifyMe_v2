@@ -27,6 +27,7 @@ export type mapProps = {
     lng: number;
     zoomLevel: number;
   };
+  workouts: Workout[];
   onMapClick: (latlng: { lat: number; lng: number }) => void;
 };
 

@@ -13,7 +13,7 @@ const DEFAULT_LAT = 22.6503867;
 const DEFAULT_LNG = 88.434807;
 const DEFAULT_ZOOM = 14;
 
-const Map = dynamic(() => import("@/components/ui/map"),
+const Map = dynamic(() => import("@/components/ui/leaflet-map"),
     {
       loading: () => <p>Hold on while we load your map...</p>,
       ssr: false
@@ -94,10 +94,13 @@ const Page = () => {
                 {!isMapReady ? (
                     <p>Determining your current location, please wait...</p>
                 ) : (
-                    <Map userLocation={userLocation} onMapClick={(clickedCoords) => {
-                        setIsFormVisible(true);
-                        setClickedCoords(clickedCoords);
-                    }}/>
+                    <Map userLocation={userLocation} 
+                        workouts={workouts}
+                        onMapClick={(clickedCoords) => {
+                            setIsFormVisible(true);
+                            setClickedCoords(clickedCoords);
+                        }}
+                    />
                 )}
             </div>
         </>
