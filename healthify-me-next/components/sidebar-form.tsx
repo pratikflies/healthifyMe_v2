@@ -38,7 +38,7 @@ export default function SidebarFormComponent({
         const handleWorkoutTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
             setWorkoutType(e.target.value);
         };
-        
+
         const validation = (formData: any) => {
             // setting any data type because: NaN of one/multiple fields is a possibilty
             const validateCadence = isFinite(formData.cadence) && formData.cadence > 0;
@@ -79,11 +79,13 @@ export default function SidebarFormComponent({
 
                     if (response.ok) {
                         const responseWorkout: Workout = await response.json();
-                        setWorkouts([...workouts, responseWorkout]); // Add object to workout array
-                        //this._renderWorkoutMarker(workout); // Render workout on map as marker
+                        // add object to workout array, the state change automatically renders marker on the map
+                        setWorkouts([...workouts, responseWorkout]);
                         const workoutComponent = renderWorkout(responseWorkout); 
-                        setWorkoutComponents([...workoutComponents, workoutComponent]); // render workout on map
-                        setIsFormVisible(false); // hide the form
+                        // add object to workoutComponents array, the state change automatically renders it on sidebar
+                        setWorkoutComponents([...workoutComponents, workoutComponent]);
+                        // hide the form
+                        setIsFormVisible(false);
                     } else throw new Error("Bad network response!");
                 } catch (error) {
                     console.error("Something went wrong while processing your request!", error);

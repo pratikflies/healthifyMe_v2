@@ -27,6 +27,7 @@ export type mapProps = {
     lng: number;
     zoomLevel: number;
   };
+  workouts: Workout[];
   onMapClick: (latlng: { lat: number; lng: number }) => void;
 };
 
@@ -68,4 +69,8 @@ export type UserLocationType = {
     lat: number;
     lng: number;
     zoomLevel: number;
+};
+
+export type SidebarBodyType = {
+    setSidebarBody: React.Dispatch<React.SetStateAction<string>>;
 };

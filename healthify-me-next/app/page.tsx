@@ -6,6 +6,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import SidebarHeaderComponent from "@/components/sidebar-header";
 import SidebarBodyComponent from "@/components/sidebar-body";
+import SidebarLoginComponent from "@/components/sidebar-login";
 import SidebarFooterComponent from "@/components/sidebar-footer";
 import { LatLng, Workout, UserLocationType } from "@/lib/types";
 
@@ -13,7 +14,7 @@ const DEFAULT_LAT = 22.6503867;
 const DEFAULT_LNG = 88.434807;
 const DEFAULT_ZOOM = 14;
 
-const Map = dynamic(() => import("@/components/ui/map"),
+const Map = dynamic(() => import("@/components/ui/leaflet-map"),
     {
       loading: () => <p>Hold on while we load your map...</p>,
       ssr: false
@@ -29,6 +30,7 @@ const Page = () => {
     });
     const [isMapReady, setIsMapReady] = useState<boolean>(false);
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+    const [sidebarBody, setSidebarBody] = useState<string>("workouts");
     const [workoutType, setWorkoutType] = useState<string>("running");
     const [clickedCoords, setClickedCoords] = useState<LatLng>({
         lat: DEFAULT_LAT,
@@ -65,8 +67,11 @@ const Page = () => {
                     height={300} 
                     className="logo"
                 />
-                <SidebarHeaderComponent />
-                <SidebarBodyComponent 
+                <SidebarHeaderComponent 
+                    setSidebarBody={setSidebarBody}
+                />
+                {sidebarBody === "login" && <SidebarLoginComponent />}
+                {sidebarBody === "workouts" && (<SidebarBodyComponent 
                     isLoading={isLoading}
                     setIsLoading={setIsLoading}
                     isFormVisible={isFormVisible}
@@ -86,7 +91,7 @@ const Page = () => {
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}
-                />
+                />)}
                 <SidebarFooterComponent />
             </div>
 
@@ -94,10 +99,13 @@ const Page = () => {
                 {!isMapReady ? (
                     <p>Determining your current location, please wait...</p>
                 ) : (
-                    <Map userLocation={userLocation} onMapClick={(clickedCoords) => {
-                        setIsFormVisible(true);
-                        setClickedCoords(clickedCoords);
-                    }}/>
+                    <Map userLocation={userLocation} 
+                        workouts={workouts}
+                        onMapClick={(clickedCoords) => {
+                            setIsFormVisible(true);
+                            setClickedCoords(clickedCoords);
+                        }}
+                    />
                 )}
             </div>
         </>
