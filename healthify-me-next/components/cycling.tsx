@@ -1,11 +1,11 @@
 "use client"
 
 import React from "react";
-import { RunningComponentProps } from "@/lib/types";
+import { CyclingComponentProps } from "@/lib/types";
 
-export default function RunningComponent({ workout }: RunningComponentProps) {
+export default function CyclingComponent({ workout }: CyclingComponentProps) {
     return (
-      <li className={`workout workout--${workout.type}`} data-id={workout.id}>
+        <li className={`workout workout--${workout.type}`} data-id={workout.id}>
         <h2 className="workout__title">{workout.description}</h2>
         <div className="workout__details">
           <span className="workout__icon">
@@ -21,13 +21,13 @@ export default function RunningComponent({ workout }: RunningComponentProps) {
         </div>
         <div className="workout__details">
           <span className="workout__icon">⚡️</span>
-          <span className="workout__value">{workout.pace?.toFixed(1)}</span>
-          <span className="workout__unit">min/km</span>
+          <span className="workout__value">{workout.speed?.toFixed(1)}</span>
+          <span className="workout__unit">km/h</span>
         </div>
         <div className="workout__details">
-          <span className="workout__icon">🦶🏼</span>
-          <span className="workout__value">{workout.cadence}</span>
-          <span className="workout__unit">spm</span>
+          <span className="workout__icon">⛰</span>
+          <span className="workout__value">{workout.elevationGain}</span>
+          <span className="workout__unit">m</span>
         </div>
       </li>
     );
