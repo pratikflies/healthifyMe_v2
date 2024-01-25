@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,26 +9,23 @@ import RunningComponent from "./running";
 import CyclingComponent from "./cycling";
 import { SidebarVisibilityProps, Workout } from "@/lib/types";
 
-export default function SidebarFormComponent({ 
-    isLoading, 
-    setIsLoading, 
+export default function SidebarFormComponent({
+    isLoading,
+    setIsLoading,
     isFormVisible,
     setIsFormVisible,
-    workoutType,
-    setWorkoutType,
     clickedCoords,
-    distance,
-    setDistance,
-    duration,
-    setDuration,
-    cadence,
-    setCadence,
-    elevationGain,
-    setElevationGain,
     workouts,
     setWorkouts,
     workoutComponents,
     setWorkoutComponents }: SidebarVisibilityProps) {
+        // none of the below states save
+        const [workoutType, setWorkoutType] = useState<string>("running");
+        const [distance, setDistance] = useState<string>("");
+        const [duration, setDuration] = useState<string>("");
+        const [cadence, setCadence] = useState<string>("");
+        const [elevationGain, setElevationGain] = useState<string>("");
+
         const renderWorkout = (workout: Workout) => {
             if (workout.type === "running") return <RunningComponent workout={workout} />
             if (workout.type === "cycling") return <CyclingComponent workout={workout} />

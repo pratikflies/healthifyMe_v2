@@ -5,20 +5,25 @@ import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from "react-leaf
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { mapProps } from "@/lib/types";
+import { mapProps, mapClickProps } from "@/lib/types";
 import { userIcon, runningIcon, cyclingIcon } from "@/components/ui/leaflet-icons";
 
-const MapClickHandler = ({ onMapClick }: any) => {
+const MapClickHandler = ({ setIsFormVisible, setClickedCoords, setSidebarBody }: mapClickProps) => {
   useMapEvents({
-      click: (e) => {
-          onMapClick(e.latlng);
-      },
+    click: (e) => {
+      setSidebarBody("workouts");
+      setIsFormVisible(true);
+      setClickedCoords({ 
+        lat: e.latlng.lat, 
+        lng: e.latlng.lng
+      });
+    },
   });
-  return null; 
+  return null;
   // this component does not render anything
 };
 
-export default function LeafletMap({ userLocation, workouts, onMapClick }: mapProps) {
+export default function LeafletMap({ userLocation, workouts, setIsFormVisible, setClickedCoords, setSidebarBody }: mapProps) {
   const { lat, lng, zoomLevel } = userLocation;
   return (
     <MapContainer style={{ height: "100%", width: "100%" }} center={[lat, lng]} zoom={zoomLevel} scrollWheelZoom={false}>
@@ -32,6 +37,7 @@ export default function LeafletMap({ userLocation, workouts, onMapClick }: mapPr
             Your Location 📍
           </Popup>
       </Marker>
+      {/* Put marker for workouts */}
       {workouts.map((workout, index) => (
         <Marker key={index} position={workout.coords} icon={workout.type === "running" ? runningIcon : cyclingIcon}>
           <Popup className={`${workout.type}-popup`} maxWidth={250} minWidth={100} autoClose={false} closeOnClick={false}>
@@ -39,7 +45,11 @@ export default function LeafletMap({ userLocation, workouts, onMapClick }: mapPr
           </Popup>
         </Marker>
       ))}
-      <MapClickHandler onMapClick={onMapClick} />
+      <MapClickHandler 
+        setIsFormVisible={setIsFormVisible} 
+        setClickedCoords={setClickedCoords} 
+        setSidebarBody={setSidebarBody}
+      />
     </MapContainer>
   );
 }

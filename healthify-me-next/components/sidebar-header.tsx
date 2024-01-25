@@ -19,7 +19,14 @@ export default function SidebarHeaderComponent({ setSidebarBody }: SidebarBodyTy
                 >
                     Login
                 </button>
-                <Link href="/signup" className="Github Link">Signup</Link>.{` In case you are facing problems, `}
+                {` or `}
+                <button 
+                    onClick={() => handleLoginClick("signup")}
+                    className="Github Link"
+                >
+                    Signup
+                </button>
+                {`. In case you are facing problems, `}
                 <Link href="/contact-us" className="Github Link">Contact Us</Link>.
             </p>
         </div>

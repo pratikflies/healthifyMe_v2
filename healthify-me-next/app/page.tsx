@@ -6,7 +6,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import SidebarHeaderComponent from "@/components/sidebar-header";
 import SidebarBodyComponent from "@/components/sidebar-body";
-import SidebarLoginComponent from "@/components/sidebar-login";
+import SidebarAuthComponent from "@/components/sidebar-auth";
 import SidebarFooterComponent from "@/components/sidebar-footer";
 import { LatLng, Workout, UserLocationType } from "@/lib/types";
 
@@ -31,15 +31,10 @@ const Page = () => {
     const [isMapReady, setIsMapReady] = useState<boolean>(false);
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
     const [sidebarBody, setSidebarBody] = useState<string>("workouts");
-    const [workoutType, setWorkoutType] = useState<string>("running");
     const [clickedCoords, setClickedCoords] = useState<LatLng>({
         lat: DEFAULT_LAT,
         lng: DEFAULT_LNG,
     });
-    const [distance, setDistance] = useState<string>("");
-    const [duration, setDuration] = useState<string>("");
-    const [cadence, setCadence] = useState<string>("");
-    const [elevationGain, setElevationGain] = useState<string>("");
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [workoutComponents, setWorkoutComponents] = useState<JSX.Element[]>([]);
 
@@ -68,25 +63,24 @@ const Page = () => {
                     className="logo"
                 />
                 <SidebarHeaderComponent 
+                    isLoading={isLoading}
+                    setIsLoading={setIsLoading}
+                    sidebarBody={sidebarBody}
                     setSidebarBody={setSidebarBody}
                 />
-                {sidebarBody === "login" && <SidebarLoginComponent />}
+                {(sidebarBody === "login" || sidebarBody === "signup")
+                    && <SidebarAuthComponent
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading} 
+                        sidebarBody={sidebarBody}
+                        setSidebarBody={setSidebarBody}
+                />}
                 {sidebarBody === "workouts" && (<SidebarBodyComponent 
                     isLoading={isLoading}
                     setIsLoading={setIsLoading}
                     isFormVisible={isFormVisible}
                     setIsFormVisible={setIsFormVisible}
-                    workoutType={workoutType}
-                    setWorkoutType={setWorkoutType}
                     clickedCoords={clickedCoords}
-                    distance={distance}
-                    setDistance={setDistance}
-                    duration={duration}
-                    setDuration={setDuration}
-                    cadence={cadence}
-                    setCadence={setCadence}
-                    elevationGain={elevationGain}
-                    setElevationGain={setElevationGain}
                     workouts={workouts}
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
@@ -101,10 +95,9 @@ const Page = () => {
                 ) : (
                     <Map userLocation={userLocation} 
                         workouts={workouts}
-                        onMapClick={(clickedCoords) => {
-                            setIsFormVisible(true);
-                            setClickedCoords(clickedCoords);
-                        }}
+                        setIsFormVisible={setIsFormVisible}
+                        setClickedCoords={setClickedCoords}
+                        setSidebarBody={setSidebarBody}
                     />
                 )}
             </div>
