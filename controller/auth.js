@@ -1,14 +1,22 @@
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const TokenLog = require("../models/tokenLog");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { validationResult } = require("express-validator");
 const { WorkoutFactory } = require("../data-engine/workoutFactory");
 
-exports.addWorkout = (req, res, next) => {
+exports.addWorkout = (req, res) => {
   const {type, coords, distance, duration, cadence, elevationGain} = req.body;
-  const workout = WorkoutFactory.getWorkout({ type, coords, distance, duration, cadence, elevationGain });
-  res.json(workout);
+  try {
+    const workout = WorkoutFactory.getWorkout({ type, coords, distance, duration, cadence, elevationGain });
+    res.status(201).json(workout);
+  }
+  catch (error) {
+    console.error(`Error adding workout of type: ${type}`, error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 //directly using nodemailer to send mails;
@@ -52,89 +60,92 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
-exports.postLogin = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors);
-    return res.status(422).render("authentication/loginForm", {
-      errorMessage: errors.array()[0].msg,
-      //this array has all the errors logged
-      oldInput: {
-        email: email,
-        password: password,
-      },
-    });
-  }
-  User.findOne({ email: email })
-    .then((user) => {
-      bcrypt
-        .compare(password, user.password)
-        .then((doMatch) => {
-          if (doMatch) {
-            req.session.isLoggedIn = true;
-            req.session.user = user;
-            return req.session.save((err) => {
-              console.log(err);
-              //user-details form has been filled;
-              if (user.fullname) res.redirect("/admin/dashboard");
-              //user-details form has not been filled
-              else res.redirect("/admin/user-details");
-            });
-          }
-          req.flash("error", "Invalid email or password.");
-          return res.redirect("/login");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.redirect("/login");
-    });
+const createAuthToken = function (user) {
+  const token = jwt.sign(
+    { email: user.email, id: user.id },
+    process.env.ACCESS_SECRET,
+    {
+      expiresIn: "7d",
+    },
+  );
+  return token;
 };
 
-exports.postSignup = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
+exports.postLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Invalid credentials: email!" });
+    }
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors);
-    return res.status(422).render("authentication/signupForm", {
-      errorMessage: errors.array()[0].msg,
-      oldInput: {
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-      },
+    // validate password & verify email
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isVerified = user.emailVerified;
+    if (!isPasswordValid || !isVerified) {
+      return res.status(401).json({ message: "Invalid Credentials!" });
+    }
+
+    // create authentication token
+    const token = createAuthToken(user);
+
+    // store token if it doesn't exist
+    const activeToken = await TokenLog.findOne({ token });
+    if (!activeToken) {
+      await TokenLog.create({
+        userId: user._id,
+        token: token,
+        type: "jwt_token",
+        status: "active",
+      });
+    }
+
+    // set user's lastLogin time
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { lastLogin: new Date() } }
+    );
+    
+    return res.status(200).json({ 
+      token,
+      message: "Logged In Successfully." 
     });
+  } catch (error) {
+    console.error(`Error during login for email: ${email}`, error);
+    return res.status(500).json({ message: error.message });
   }
-  bcrypt
-    .hash(password, 12)
-    .then((hashedPassword) => {
-      const user = new User({
-        email: email,
-        password: hashedPassword,
-        workouts: { items: [] },
-      });
-      return user.save();
-    })
-    .then((result) => {
-      res.redirect("/login");
-      return transporter.sendMail({
-        to: email,
-        from: "pratik16082001@gmail.com",
-        subject: "Signup succeeded!",
-        html: "<h1>You have successfully signed up with HealthifyMe. Welcome Onboard!</h1>",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+};
+
+exports.postSignup = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) throw new Error("User already exists!");
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const { _id: userId } = await User.create({
+      email,
+      password: hashedPassword,
+      emailVerified: process.env.ENV === "dev" ? true : false,
     });
+
+    const token = crypto.randomBytes(20).toString("hex");
+    await TokenLog.create({
+      userId,
+      token,
+      type: "one_time_activation",
+      status: "active",
+    });
+
+    // send activation e-mail
+    const activationUrl = `${process.env.LOCAL_URL}/activate-account/${email}|${token}`;
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(`Error during signup for email: ${email}`, error);
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 exports.postLogout = (req, res, next) => {

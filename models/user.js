@@ -11,29 +11,27 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  fullname: {
-    type: String,
+  emailVerified: {
+    type: Boolean,
+    default: false,
   },
-  gender: {
-    type: String,
+  meta: {
+    type: Object,
+    default: {}, 
+    // Contains user details: full name, gender, age, height, weight, goal
   },
-  age: {
-    type: Number,
+  created: {
+    type: Date, 
+    default: Date.now,
   },
-  height: {
-    type: Number,
+  updated: {
+    type: Date,
+    default: Date.now,
   },
-  weight: {
-    type: Number,
-  },
-  goal: {
-    type: Number,
-  },
-  resetToken: String,
-  resetTokenExpiration: Date,
-  pastWorkouts: {
-    items: [],
-  },
+  lastLogin: {
+    type: Date,
+    default: null,
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);

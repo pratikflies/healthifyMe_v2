@@ -14,7 +14,7 @@ class WorkoutFactory {
       case "cycling":
         return new Cycling({ coords, distance, duration, elevationGain });
       default:
-        throw new Error(`Workout ${type} not found!`);
+        throw new Error(`Workout type: ${type} not found!`);
     }
   }
 }
