@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
+import Cookie from "js-cookie";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,7 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [snapshotSidebarBody, setSnapshotSidebarBody] = useState<string>(sidebarBody);
     const router = useRouter();
 
     const validation = ({ email, password }: authDataType) => {
@@ -27,6 +29,7 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault();
         setIsLoading(true);
+        setSnapshotSidebarBody(sidebarBody);
 
         const authData = {
             email,
@@ -50,16 +53,18 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
 
                 if (response.ok) {
                     const responseData = await response.json();
-                    if (sidebarBody === "login") {
-                        // do stuff
-                        router.refresh(); // try without this, also try router.reload()
+                    if (snapshotSidebarBody === "login") {
+                        Cookie.set("token", responseData.token);
+                        // router.refresh(); // try without this, also try router.reload()
                         router.push("/dashboard");   
-                    } 
-                    else {
-                        // notify user to check e-mail, verify account
+                    } else {
+                        // notify user to check e-mail, activate account
                         // do stuff
                         setSidebarBody("login");
                     }
+                    setEmail("");
+                    setPassword("");
+                    setShowPassword(false);
                 } else throw new Error("Bad network response!");
             } catch (error) {
                 console.error("Something went wrong while authenticating!", error);
