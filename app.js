@@ -12,23 +12,15 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:3000' // or '*' for all origins
+  origin: "http://localhost:3000", // or '*' for all origins
 }));
 
 // importing routes
 const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
-const User = require("./models/user");
 
 const MONGODB_URI =
   `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.8l9b2qc.mongodb.net/healthifyMe`;
-
-const store = new MongoDBStore({
-  uri: MONGODB_URI,
-  collection: "sessions",
-});
-
-// const csrfProtection = csrf();
 
 const fileStorage = multer.diskStorage({
   // path
@@ -64,51 +56,20 @@ app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
 app.use("/images", express.static(path.join(__dirname, "images")));
-//manages backed sessions and frontend cookies automatically;
-app.use(
-  session({
-    secret: "my secret",
-    resave: false,
-    saveUninitialized: false,
-    store: store,
-  })
-);
 
-//CSRF uses session hence after it. Also, every request has a CSRF token that is validated automatically at the backend;
-// app.use(csrfProtection);
-app.use(flash());
-// app.use(cors());
-
-//attaching user to the request, user fetched from current session;
-app.use((req, _res, next) => {
-  if (!req.session.user) {
-    return next();
-  }
-  User.findById(req.session.user._id)
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.error(err));
-});
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  // res.locals.csrfToken = req.csrfToken();
-  next();
-});
-
-// routes/middleware
-app.use("/admin", adminRoutes);
+// UNPROTECTED ROUTES
 app.use(authRoutes);
+
+// PROTECTED ROUTES
+app.use("/admin", adminRoutes);
 
 //connecting to database;
 mongoose
   .connect(MONGODB_URI)
   .then((_result) => {
-    console.log("Connected to database ❤️");
     app.listen(3001);
+    console.log("Server listening on http://localhost:3001. Connected to database. 🚀");
   })
   .catch((err) => {
-    console.error("Failed to connect to database: ", err);
+    console.error("Failed to connect to database 💔: ", err);
   });
