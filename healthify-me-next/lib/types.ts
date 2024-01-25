@@ -1,3 +1,8 @@
+export type LoadingProps = {
+    isLoading: boolean;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export type Workout = {
     cadence?: number;
     elevationGain?: number;
@@ -21,14 +26,23 @@ export type LatLng = {
     lng: number;
 };
 
-export type mapProps = {
-  userLocation: {
-    lat: number;
-    lng: number;
+export type UserLocationType = LatLng & {
     zoomLevel: number;
-  };
-  workouts: Workout[];
-  onMapClick: (latlng: { lat: number; lng: number }) => void;
+};
+
+export type mapClickProps = {
+    setIsFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    setClickedCoords: React.Dispatch<React.SetStateAction<LatLng>>;
+    setSidebarBody: React.Dispatch<React.SetStateAction<string>>;
+};
+
+export type mapProps = mapClickProps & {
+    userLocation: {
+        lat: number;
+        lng: number;
+        zoomLevel: number;
+    };
+    workouts: Workout[];
 };
 
 export type CyclingComponentProps = {
@@ -43,34 +57,22 @@ export type SidebarWorkoutProps = {
     workoutComponents: JSX.Element[];
 };
 
-export type SidebarVisibilityProps = {
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    isFormVisible: boolean;
-    setIsFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    workoutType: string;
-    setWorkoutType: React.Dispatch<React.SetStateAction<string>>;
+export type SidebarBodyType = LoadingProps & {
+    sidebarBody: string,
+    setSidebarBody: React.Dispatch<React.SetStateAction<string>>;
+};
+
+export type SidebarVisibilityProps = LoadingProps & {
     clickedCoords: LatLng;
-    distance: string;
-    setDistance: React.Dispatch<React.SetStateAction<string>>;
-    duration: string;
-    setDuration: React.Dispatch<React.SetStateAction<string>>;
-    cadence: string;
-    setCadence: React.Dispatch<React.SetStateAction<string>>;
-    elevationGain: string;
-    setElevationGain: React.Dispatch<React.SetStateAction<string>>;
     workouts: Workout[];
     setWorkouts: React.Dispatch<React.SetStateAction<Workout[]>>;
+    isFormVisible: boolean;
+    setIsFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
     workoutComponents: JSX.Element[];
     setWorkoutComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 };
 
-export type UserLocationType = {
-    lat: number;
-    lng: number;
-    zoomLevel: number;
-};
-
-export type SidebarBodyType = {
-    setSidebarBody: React.Dispatch<React.SetStateAction<string>>;
+export type authDataType = {
+    email: string;
+    password: string;
 };

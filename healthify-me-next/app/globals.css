@@ -81,6 +81,12 @@ a:visited {
   font-weight: 600;
 }
 
+.options-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .login-headline {
   margin-top: 25%;
   display: flex;
@@ -142,6 +148,13 @@ a:visited {
 .show-password-label {
   margin-left: 4px;
   font-size: 14px;
+}
+
+.go-back {
+  cursor: pointer; 
+  margin-top: 1rem;
+  font-size: 14px;
+  text-decoration: underline;
 }
 
 .form-button {
