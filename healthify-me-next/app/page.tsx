@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import "./globals.css";
+import "./page.css";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import SidebarHeaderComponent from "@/components/sidebar-header";

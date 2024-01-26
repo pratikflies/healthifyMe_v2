@@ -56,7 +56,7 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
                     if (snapshotSidebarBody === "login") {
                         Cookie.set("token", responseData.token);
                         // router.refresh(); // try without this, also try router.reload()
-                        router.push("/dashboard");   
+                        router.push("/dashboard");
                     } else {
                         // notify user to check e-mail, activate account
                         // do stuff
