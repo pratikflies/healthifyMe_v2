@@ -1,11 +1,13 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import dynamic from "next/dynamic";
+import axiosInstance from "@/lib/axiosInstance";
 import "./dashboard.css";
+import axios from "axios";
 
 const PieChartComponent = dynamic(() => import("@/components/ui/pie-chart"),
     {
@@ -21,14 +23,66 @@ const BarChartComponent = dynamic(() => import("@/components/ui/bar-chart"),
     }
 );
 
+export async function getProps() {
+    try {
+        const [dashboardResponse, profileResponse] = await Promise.all([
+            axiosInstance.get(`http://localhost:3001/dashboard`),
+            axiosInstance.get(`http://localhost:3001/profile`),
+        ]);
+        if (!dashboardResponse.data || !profileResponse.data) {
+            throw new Error("Invalid response from server!");
+        }
+
+        const {
+            runningCount, cyclingCount, swimmingCount, // for pie-chart
+            completedWorkoutsArray, upcomingWorkoutsArray, distanceCovered, timeSpent, caloriesBurnt, // for statistics
+            recommendation, // for recommendation
+        } = dashboardResponse.data;
+
+        const { 
+            name, age, gender, bmi, target,
+        } = profileResponse.data;
+
+        const progress = (distanceCovered / target) * 100;
+    
+        return {
+            props: {
+                name, age, gender, bmi, target, progress, // for profile
+                completedWorkoutsArray, upcomingWorkoutsArray, distanceCovered, timeSpent, caloriesBurnt, // for statistics
+                runningCount, cyclingCount, swimmingCount, // for pie-chart
+                recommendation, // for recommendation
+            }
+        };
+    } catch (error) {
+        console.error("Error fetching dashboard's data: ", error);
+        return {
+          props: {}
+        };
+    }
+}
+  
+
 export default function Dashboard() {
-    const [name, setName] = useState("Pratik");
-    const [workoutsCompleted, setWorkoutsCompleted] = useState("7");
-    const [recommendation, setRecommendation] = useState("Keep up the motivation!");
-    const [workoutsCompletedArray, setWorkoutsCompletedArray] = useState([
-        "Swimming, July 8, 5:46 - 9 km, 8 minutes",
-        "Running, July 10, 2:46 - 2 km, 10 minutes",
-    ])
+  const [props, setProps] = useState({});
+
+  useEffect(() => {
+    getProps()
+      .then(response => {
+        setProps(response.props);
+      })
+      .catch(error => {
+        console.error("Error fetching dashboard's data: ", error);
+      });
+  }, []);
+
+  const {
+      name, age, gender, bmi, target, progress, // for profile
+      completedWorkoutsArray, upcomingWorkoutsArray, distanceCovered, timeSpent, caloriesBurnt, // for statistics
+      runningCount, cyclingCount, swimmingCount, // for pie-chart
+      recommendation, // for recommendation
+  } = props;
+
+  console.log(props);
 
   return (
     <div className="space-y-8">
@@ -44,20 +98,24 @@ export default function Dashboard() {
                     <p className="mb-1" style={{color: '#ffb545'}}>{name}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
+                    <p className="mb-1">Age:</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{age}</p>
+                </div>
+                <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Gender:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{gender}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">BMI:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{bmi}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Target:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{target}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Progress:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{progress}</p>
                 </div>
             </div>
         </div>
@@ -69,23 +127,23 @@ export default function Dashboard() {
                 </p>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Workouts Completed:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{Number(workoutsCompleted)}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{completedWorkoutsArray?.length}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Upcoming Workouts:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{upcomingWorkoutsArray?.length}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Distance Covered:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{distanceCovered}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Time Spent:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{timeSpent}</p>
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Calories Burnt:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{caloriesBurnt}</p>
                 </div>
             </div>
         </div>
@@ -109,7 +167,11 @@ export default function Dashboard() {
                         Your efforts visualized in a pie-chart.
                     </p>
                     <div className="flex flex-row items-center space-x-2">
-                        <PieChartComponent />
+                        <PieChartComponent 
+                            /*runningCount={runningCount}
+                            cyclingCount={cyclingCount}
+                            swimmingCount={swimmingCount}*/
+                        />
                     </div>
                 </div>
             </div>
@@ -120,7 +182,12 @@ export default function Dashboard() {
                         Tracking progress towards your target.
                     </p>
                     <div className="flex flex-row items-center space-x-2">
-                        <BarChartComponent />
+                        <BarChartComponent 
+                            /*
+                            distanceCovered={distanceCovered}
+                            target={target}
+                            */
+                        />
                     </div>
                 </div>
             </div>
@@ -136,7 +203,7 @@ export default function Dashboard() {
                         Past efforts, present pride.
                     </p>
                     <ul className="list-inside list-disc">
-                    {workoutsCompletedArray.map((workout, index) => (
+                    {completedWorkoutsArray?.map((workout, index) => (
                         <li key={index} className="text-md mb-2">
                         {workout}
                         </li>
@@ -148,10 +215,10 @@ export default function Dashboard() {
                 <div>
                     <h3 className="text-lg font-medium">Upcoming Workouts</h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                    Get! Set! Go!
+                        Get! Set! Go!
                     </p>
                     <ul className="list-inside list-disc">
-                    {workoutsCompletedArray.map((workout, index) => (
+                    {upcomingWorkoutsArray?.map((workout, index) => (
                         <li key={index} className="text-md mb-2">
                         {workout}
                         </li>

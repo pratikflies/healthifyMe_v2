@@ -2,23 +2,22 @@ const path = require("path");
 const express = require("express");
 //destructuring
 const { check, body } = require("express-validator");
-const authController = require("../controller/auth");
-const error = require("../controller/error");
+const publicController = require("../controller/public");
 const User = require("../models/user");
 
 const router = express.Router();
 
-router.post("/add-workout", authController.addWorkout);
-router.get("/", authController.getHomepage);
-router.get("/login", authController.getLogin);
-router.get("/signup", authController.getSignup);
-router.get("/reset", authController.getReset);
-router.get("/reset/:token", authController.getNewPassword);
-router.get("/contact-us", authController.getContact);
-router.get("/logout", authController.postLogout);
-router.post("/logout", authController.postLogout);
-router.post("/login", authController.postLogin);
-router.post("/signup", authController.postSignup);
+router.post("/add-workout", publicController.addWorkout);
+router.get("/", publicController.getHomepage);
+router.get("/login", publicController.getLogin);
+router.get("/signup", publicController.getSignup);
+router.get("/reset", publicController.getReset);
+router.get("/reset/:token", publicController.getNewPassword);
+router.get("/contact-us", publicController.getContact);
+router.get("/logout", publicController.postLogout);
+router.post("/logout", publicController.postLogout);
+router.post("/login", publicController.postLogin);
+router.post("/signup", publicController.postSignup);
 router.post(
   "/new-password",
   body(
@@ -28,7 +27,7 @@ router.post(
     .trim()
     .isLength({ min: 5 })
     .isAlphanumeric(),
-  authController.postNewPassword
+  publicController.postNewPassword
 );
 router.post(
   "/reset",
@@ -45,10 +44,7 @@ router.post(
         //promise fulfilled with nothing, treated as true;
       });
     }),
-  authController.postReset
+  publicController.postReset
 );
-
-//catches pages that are not found, has to be at last;
-router.use("*", error.getError);
 
 module.exports = router;
