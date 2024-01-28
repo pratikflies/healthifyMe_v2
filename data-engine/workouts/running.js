@@ -3,8 +3,8 @@ const { Workout } = require("../workout");
 class Running extends Workout {
     type = "running";
   
-    constructor({ coords, distance, duration, cadence }) {
-      super(coords, distance, duration);
+    constructor({ coords, distance, duration, cadence, dateObject }) {
+      super(coords, distance, duration, dateObject);
       this.cadence = cadence;
       this.calcPace();
       this._setDescription();
@@ -18,5 +18,5 @@ class Running extends Workout {
 };
 
 module.exports = {
-    Running,
+  Running,
 }

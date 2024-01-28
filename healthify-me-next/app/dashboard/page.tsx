@@ -2,12 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import axiosInstance from "@/lib/axiosInstance";
 import "./dashboard.css";
-import axios from "axios";
 
 const PieChartComponent = dynamic(() => import("@/components/ui/pie-chart"),
     {
@@ -40,14 +37,14 @@ export async function getProps() {
         } = dashboardResponse.data;
 
         const { 
-            name, age, gender, bmi, target,
+            firstName, lastName, age, gender, bmi, target,
         } = profileResponse.data;
 
         const progress = (distanceCovered / target) * 100;
     
         return {
             props: {
-                name, age, gender, bmi, target, progress, // for profile
+                name: firstName + lastName, age, gender, bmi, target, progress, // for profile
                 completedWorkoutsArray, upcomingWorkoutsArray, distanceCovered, timeSpent, caloriesBurnt, // for statistics
                 runningCount, cyclingCount, swimmingCount, // for pie-chart
                 recommendation, // for recommendation
@@ -63,7 +60,7 @@ export async function getProps() {
   
 
 export default function Dashboard() {
-  const [props, setProps] = useState({});
+  const [props, setProps] = useState({}); // set loading state here
 
   useEffect(() => {
     getProps()
@@ -81,8 +78,6 @@ export default function Dashboard() {
       runningCount, cyclingCount, swimmingCount, // for pie-chart
       recommendation, // for recommendation
   } = props;
-
-  console.log(props);
 
   return (
     <div className="space-y-8">

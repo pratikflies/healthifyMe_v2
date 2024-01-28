@@ -24,4 +24,11 @@ const cyclingIcon = new L.Icon({
     popupAnchor: [1, -46],
 });
 
-export { userIcon, runningIcon, cyclingIcon };
+const swimmingIcon = new L.Icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/128/2264/2264829.png',
+    iconSize: [50, 50],
+    iconAnchor: [25, 50],
+    popupAnchor: [1, -46],
+});
+
+export { userIcon, runningIcon, cyclingIcon, swimmingIcon };

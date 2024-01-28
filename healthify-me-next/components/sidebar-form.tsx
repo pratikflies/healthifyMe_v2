@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { IconSpinner } from "@/components/ui/icons";
 import RunningComponent from "./running";
 import CyclingComponent from "./cycling";
+import SwimmingComponent from "./swimming";
 import { SidebarVisibilityProps, Workout } from "@/lib/types";
+import axiosInstance from "@/lib/axiosInstance";
 
 export default function SidebarFormComponent({
     isLoading,
@@ -18,17 +20,21 @@ export default function SidebarFormComponent({
     workouts,
     setWorkouts,
     workoutComponents,
-    setWorkoutComponents }: SidebarVisibilityProps) {
+    setWorkoutComponents,
+    isLoggedIn }: SidebarVisibilityProps) {
         // none of the below states save
         const [workoutType, setWorkoutType] = useState<string>("running");
         const [distance, setDistance] = useState<string>("");
         const [duration, setDuration] = useState<string>("");
         const [cadence, setCadence] = useState<string>("");
         const [elevationGain, setElevationGain] = useState<string>("");
+        const [strokes, setStrokes] = useState<string>("");
+        const [date, setDate] = useState<string>("");
 
         const renderWorkout = (workout: Workout) => {
             if (workout.type === "running") return <RunningComponent workout={workout} />
             if (workout.type === "cycling") return <CyclingComponent workout={workout} />
+            if (workout.type === "swimming") return <SwimmingComponent workout={workout} />
             return <></>;
         };
 
@@ -40,8 +46,9 @@ export default function SidebarFormComponent({
             // setting any data type because: NaN of one/multiple fields is a possibilty
             const validateCadence = isFinite(formData.cadence) && formData.cadence > 0;
             const validateElevationGain = isFinite(formData.elevationGain);
+            const validateStrokes = isFinite(formData.strokes) && formData.strokes > 0;
 
-            return (validateCadence || validateElevationGain) 
+            return (validateCadence || validateElevationGain || validateStrokes) 
                 && (formData.distance > 0 
                 && formData.duration > 0);
         };
@@ -57,6 +64,8 @@ export default function SidebarFormComponent({
                 duration: Number(duration),
                 cadence: Number(cadence),
                 elevationGain: Number(elevationGain),
+                strokes: Number(strokes),
+                dateObject: isLoggedIn ? new Date(date) : null,
             };
 
             // validate form data
@@ -74,7 +83,12 @@ export default function SidebarFormComponent({
                         }
                     });
 
+                    let saveWorkoutResponse;
+                    isLoggedIn && (saveWorkoutResponse = await axiosInstance.post("http://localhost:3001/save", formData));
+
                     if (response.ok) {
+                        if (isLoggedIn && !(saveWorkoutResponse?.status === 201))
+                            throw new Error("Error while storing workout to database!");
                         const responseWorkout: Workout = await response.json();
                         // add object to workout array, the state change automatically renders marker on the map
                         setWorkouts([...workouts, responseWorkout]);
@@ -107,6 +121,7 @@ export default function SidebarFormComponent({
                         >
                             <option value="running">Running</option>
                             <option value="cycling">Cycling</option>
+                            {isLoggedIn && <option value="swimming">Swimming</option>}
                         </select>
                     </div>
                     <div className="form__row">
@@ -150,6 +165,26 @@ export default function SidebarFormComponent({
                             disabled={isLoading}
                         />
                     </div>)}
+                    {workoutType === "swimming" && isLoggedIn && (<div className="form__row">
+                        <Label className="form__label">Strokes</Label>
+                        <Input
+                            className="form__input form__input--strokes"
+                            id="strokes"
+                            placeholder="strokes/min"
+                            onChange={e => setStrokes(e.target.value)}
+                            disabled={isLoading}
+                        />
+                    </div>)}
+                    {isLoggedIn && <div className="form__row">
+                        <Label className="form__label">Date</Label>
+                        <Input 
+                            type="datetime-local" 
+                            id="datetime-input"
+                            className="form__input"
+                            onChange={e => setDate(e.target.value)}
+                            disabled={isLoading}
+                        />
+                    </div>}
                     <Button disabled={isLoading}>
                         {isLoading && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
                         OK

@@ -4,18 +4,22 @@ const User = require("../models/user");
 const Image = require("../models/image");
 const fileHelper = require("../util/file");
 const { validationResult } = require("express-validator");
+const { WorkoutFactory } = require("../data-engine/workoutFactory");
 
 function square(num) { return num * num; }
 exports.getUserProfile = async (req, res) => {
   try {
-    const profile = (await User.findOne({ userId: req.userId }))?.meta;
+    const profile = (await User.findOne({ _id: req.userId }))?.meta;
 
     return res.status(200).json({
-      name: profile?.name || "HealthifyMe User",
-      age: profile?.age || 1, // store age as number in db
-      gender: profile?.gender || "Not specified",
-      target: profile?.target || 1, // store age as number in db
-      bmi: (profile?.weight || 1)/square(profile?.height || 1),
+      firstName: profile?.firstName || "NA ",
+      lastName: profile?.lastName || "NA",
+      age: profile?.age || 1,
+      height: profile?.height || 1,
+      weight: profile?.weight || 1,
+      gender: profile?.gender || "not-disclosed",
+      target: profile?.target || 1, 
+      bmi: (parseFloat(profile?.weight || 1)/square(profile?.height || 1)).toFixed(2),
     });
   } catch (error) {
     console.error("Error while fetching user profile: ", error);
@@ -23,42 +27,40 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-exports.postUserDetails = (req, res, next) => {
-  const fullname = req.body.fullname;
-  const gender = req.body.gender;
-  const age = req.body.age;
-  const height = req.body.height;
-  const weight = req.body.weight;
-  const goal = req.body.goal;
+exports.postUserProfile = async (req, res) => {
+  const { firstName, lastName, gender, age, height, weight, target } = req.body;
 
-  //Invalid user-details;
-  if (weight === 0 || height === 0 || goal === 0 || age === 0) {
-    return res.redirect("/admin/user-details");
+  // validate details 
+  if (firstName.trim() === "" || weight === 0 || height === 0 || target === 0 || age === 0) {
+    throw new Error("Invalid profile details entered!");
   }
 
-  //Save user-details to database;
-  User.findOne({ _id: req.user._id }, (err, user) => {
-    if (err) {
-      console.error("Error finding user:", err);
-      return;
-    }
+  // save user-details to database 
+  try {
+    const userProfile = {
+      firstName,
+      lastName,
+      gender,
+      age,
+      height,
+      weight,
+      target,
+    };    
+
+    const user = await User.findOne({ _id: req.userId });
     if (user) {
-      user.fullname = fullname;
-      user.gender = gender;
-      user.age = age;
-      user.height = height;
-      user.weight = weight;
-      user.goal = goal;
-      user
-        .save()
-        .then((result) => {
-          return res.redirect("/admin/dashboard");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      user.meta = {
+        ...user.meta,
+        ...userProfile,
+      }
     }
-  });
+    await user.save();
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error finding and updating user profile:", error);
+    res.status(500).json({ message: error.message });
+  }  
 };
 
 exports.getDashboard = async (req, res) => {
@@ -109,36 +111,46 @@ exports.getDashboard = async (req, res) => {
   }
 };
 
-exports.getApp = (req, res, next) => {
-  Workout.find({ userId: req.user._id })
-    .then((workouts) => {
-      res.render("admin/admin", {
-        workouts: workouts,
-        userEmail: req.user.email,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+exports.fetchWorkout = async (req, res) => {
+  try {
+    const workouts = await Workout.find({ userId: req.userId });
+    const currentDate = new Date();
+    const upcomingWorkoutsArray = workouts.filter((workout) => {
+      return workout.workout.date > currentDate;
     });
+    res.status(200).json(upcomingWorkoutsArray);
+  } catch (error) {
+    console.error("Error while fetching user workouts: ", error);
+    return res.status(500).json({ message: error.message });
+  }
 };
 
-exports.saveWorkout = (req, res, next) => {
-  const workout = req.body.currWorkout;
-  const object = new Workout({
-    newWorkout: workout,
-    userId: req.user._id,
-  });
-  object
-    .save()
-    .then((result) => {
-      console.log("Created & Saved Workout!");
-      res.send("Request received successfully");
-      //It is indeed mandatory to send a response to requests coming via fetch in
-      //order to complete the request-response cycle.
-    })
-    .catch((err) => {
-      console.log(err);
+exports.saveWorkout = async (req, res) => {
+  const {type, coords, distance, duration, cadence, elevationGain, strokes, dateObject} = req.body;
+
+  try {
+    const workout = WorkoutFactory.getWorkout(
+      { 
+        type, 
+        coords, 
+        distance, 
+        duration, 
+        cadence, 
+        elevationGain, 
+        strokes, 
+        dateObject,
+      }
+    );
+    await Workout.create({
+      userId: req.userId,
+      workout,
     });
+    res.status(201).json({ success: true });
+  }
+  catch (error) {
+    console.error(`Error adding workout of type: ${type}`, error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.deleteWorkout = (req, res, next) => {
