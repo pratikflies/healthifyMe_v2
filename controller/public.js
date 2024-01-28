@@ -8,9 +8,22 @@ const { validationResult } = require("express-validator");
 const { WorkoutFactory } = require("../data-engine/workoutFactory");
 
 exports.addWorkout = (req, res) => {
-  const {type, coords, distance, duration, cadence, elevationGain} = req.body;
+  const {type, coords, distance, duration, cadence, elevationGain, strokes, dateObject} = req.body;
+
   try {
-    const workout = WorkoutFactory.getWorkout({ type, coords, distance, duration, cadence, elevationGain });
+    const workout = WorkoutFactory.getWorkout(
+      { 
+        type, 
+        coords, 
+        distance, 
+        duration, 
+        cadence, 
+        elevationGain, 
+        strokes, 
+        dateObject,
+      }
+    );
+    
     res.status(201).json(workout);
   }
   catch (error) {

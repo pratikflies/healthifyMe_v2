@@ -8,7 +8,7 @@ const workoutSchema = new Schema({
     ref: "User",
     required: true,
   },
-  newWorkout: {
+  workout: {
     type: Object,
     required: true,
   },

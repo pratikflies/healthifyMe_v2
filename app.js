@@ -16,8 +16,8 @@ app.use(cors({
 }));
 
 // importing routes
-const adminRoutes = require("./routes/admin");
-const authRoutes = require("./routes/auth");
+const protectedRoutes = require("./routes/protected");
+const publicRoutes = require("./routes/public");
 
 const MONGODB_URI =
   `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.8l9b2qc.mongodb.net/healthifyMe`;
@@ -58,10 +58,10 @@ app.use(
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // UNPROTECTED ROUTES
-app.use(authRoutes);
+app.use(publicRoutes);
 
 // PROTECTED ROUTES
-app.use("/admin", adminRoutes);
+app.use(protectedRoutes);
 
 //connecting to database;
 mongoose

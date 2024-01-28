@@ -14,7 +14,8 @@ export default function SidebarBodyComponent({
     workouts,
     setWorkouts,
     workoutComponents, 
-    setWorkoutComponents }: SidebarVisibilityProps) {
+    setWorkoutComponents,
+    isLoggedIn }: SidebarVisibilityProps) {
         return (
             <>
                 <SidebarFormComponent 
@@ -27,6 +28,7 @@ export default function SidebarBodyComponent({
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}
+                    isLoggedIn={isLoggedIn}
                 />
                 <SidebarWorkoutsComponent 
                     workoutComponents={workoutComponents}

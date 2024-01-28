@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { mapProps, mapClickProps } from "@/lib/types";
-import { userIcon, runningIcon, cyclingIcon } from "@/components/ui/leaflet-icons";
+import { userIcon, runningIcon, cyclingIcon, swimmingIcon } from "@/components/ui/leaflet-icons";
 
 const MapClickHandler = ({ setIsFormVisible, setClickedCoords, setSidebarBody }: mapClickProps) => {
   useMapEvents({
@@ -39,9 +39,10 @@ export default function LeafletMap({ userLocation, workouts, setIsFormVisible, s
       </Marker>
       {/* Put marker for workouts */}
       {workouts.map((workout, index) => (
-        <Marker key={index} position={workout.coords} icon={workout.type === "running" ? runningIcon : cyclingIcon}>
+        <Marker key={index} position={workout.coords} 
+          icon={workout.type === "running" ? runningIcon : (workout.type === "cycling" ? cyclingIcon: swimmingIcon)}>
           <Popup className={`${workout.type}-popup`} maxWidth={250} minWidth={100} autoClose={false} closeOnClick={false}>
-            {workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'} {workout.description}
+            {workout.type === 'running' ? '🏃‍♂️' : (workout.type === "cycling" ? '🚴‍♀️': '🏊🏻')} {workout.description}
           </Popup>
         </Marker>
       ))}

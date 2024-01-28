@@ -8,6 +8,7 @@ export type Workout = {
     elevationGain?: number;
     pace?: number;
     speed?: number;
+    strokes?: number;
     clicks: number;
     coords: {
         lat: number;
@@ -53,6 +54,10 @@ export type RunningComponentProps = {
     workout: Workout;
 };
 
+export type SwimmingComponentProps = {
+    workout: Workout;
+};
+
 export type SidebarWorkoutProps = {
     workoutComponents: JSX.Element[];
 };
@@ -70,9 +75,33 @@ export type SidebarVisibilityProps = LoadingProps & {
     setIsFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
     workoutComponents: JSX.Element[];
     setWorkoutComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
+    isLoggedIn: boolean;
 };
 
 export type authDataType = {
     email: string;
     password: string;
 };
+
+export type SidebarNavItem = {
+    title: string;
+    route: string;
+}
+  
+export type DashboardSidebarProps = {
+    children: React.ReactNode;
+    heading: string;
+    subHeading: string;
+    sidebarNavItems: SidebarNavItem[];
+    onClick: (route: string) => void;
+}
+
+export type ProfileDataType = {
+    firstName: string;
+    lastName: string;
+    gender: string;
+    age: number;
+    height: number;
+    weight: number;
+    target: number;
+  }
