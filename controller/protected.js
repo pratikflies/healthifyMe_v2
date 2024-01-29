@@ -17,7 +17,7 @@ exports.getUserProfile = async (req, res) => {
       age: profile?.age || 1,
       height: profile?.height || 1,
       weight: profile?.weight || 1,
-      gender: profile?.gender || "not-disclosed",
+      gender: profile?.gender || "Choose not to disclose",
       target: profile?.target || 1, 
       bmi: (parseFloat(profile?.weight || 1)/square(profile?.height || 1)).toFixed(2),
     });
@@ -69,7 +69,9 @@ exports.getDashboard = async (req, res) => {
     const currentDate = new Date();
 
     // retrieve all documents from the Workouts collection
-    const workouts = await Workout.find({ userId: req.userId });
+    const workoutDocuments = await Workout.find({ userId: req.userId });
+    const workouts = workoutDocuments.map(doc => doc.workout);
+
 
     // create an empty array to store workouts with a date greater than the current date
     const upcomingWorkoutsArray = []; const completedWorkoutsArray = [];
@@ -113,10 +115,12 @@ exports.getDashboard = async (req, res) => {
 
 exports.fetchWorkout = async (req, res) => {
   try {
-    const workouts = await Workout.find({ userId: req.userId });
+    const workoutDocuments = await Workout.find({ userId: req.userId });
+    const workouts = workoutDocuments.map(doc => doc.workout);
+
     const currentDate = new Date();
     const upcomingWorkoutsArray = workouts.filter((workout) => {
-      return workout.workout.date > currentDate;
+      return workout.date > currentDate;
     });
     res.status(200).json(upcomingWorkoutsArray);
   } catch (error) {
@@ -126,7 +130,7 @@ exports.fetchWorkout = async (req, res) => {
 };
 
 exports.saveWorkout = async (req, res) => {
-  const {type, coords, distance, duration, cadence, elevationGain, strokes, dateObject} = req.body;
+  const {type, coords, distance, duration, cadence, elevationGain, strokes, dateObject, id} = req.body;
 
   try {
     const workout = WorkoutFactory.getWorkout(
@@ -141,6 +145,8 @@ exports.saveWorkout = async (req, res) => {
         dateObject,
       }
     );
+
+    workout.id = id;
     await Workout.create({
       userId: req.userId,
       workout,
@@ -153,32 +159,15 @@ exports.saveWorkout = async (req, res) => {
   }
 };
 
-exports.deleteWorkout = (req, res, next) => {
-  const clickedId = req.body.id;
-  Workout.find({}, (err, workouts) => {
-    //leaving {} blank means find all workouts;
-    if (err) {
-      console.error("Error retrieving workouts:", err);
-    } else {
-      let idToDelete;
-      workouts.forEach((workout) => {
-        // Perform operations on each workout
-        const Workout = JSON.parse(workout.newWorkout);
-        if (Workout.id == clickedId) idToDelete = workout._id;
-      });
-
-      //nested deleteOne inside find method so that it only executes after I have
-      //gotten my idToDelete;
-      Workout.deleteOne({ _id: idToDelete }, (err) => {
-        if (err) {
-          console.error("Error deleting document:", err);
-        } else {
-          console.log("Document deleted!");
-          return res.send("Document deleted successfully!");
-        }
-      });
-    }
-  });
+exports.deleteWorkout = async (req, res) => {
+  const workoutId = req.body.id;
+  try {
+    const result = await Workout.deleteOne({ "workout.id": workoutId });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(`Error deleting workout with id: ${workoutId}!`, error.message);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.resetUser = (req, res, next) => {

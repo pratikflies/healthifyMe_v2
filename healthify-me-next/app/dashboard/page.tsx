@@ -20,6 +20,21 @@ const BarChartComponent = dynamic(() => import("@/components/ui/bar-chart"),
     }
 );
 
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+];
+
 export async function getProps() {
     try {
         const [dashboardResponse, profileResponse] = await Promise.all([
@@ -40,7 +55,7 @@ export async function getProps() {
             firstName, lastName, age, gender, bmi, target,
         } = profileResponse.data;
 
-        const progress = (distanceCovered / target) * 100;
+        const progress = ((distanceCovered / target) * 100).toFixed(2);
     
         return {
             props: {
@@ -110,7 +125,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-row items-center space-x-2">
                     <p className="mb-1">Progress:</p>
-                    <p className="mb-1" style={{color: '#ffb545'}}>{progress}</p>
+                    <p className="mb-1" style={{color: '#ffb545'}}>{progress}%</p>
                 </div>
             </div>
         </div>
@@ -148,7 +163,9 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground mb-4">
                     Unlock Your Potential with AI Insights.
                 </p>
-                <p className="mb-1">{recommendation}</p>
+                {recommendation && (
+                    <p className="mb-1">{recommendation}</p>
+                )}
             </div>
         </div>
       </div>
@@ -200,7 +217,12 @@ export default function Dashboard() {
                     <ul className="list-inside list-disc">
                     {completedWorkoutsArray?.map((workout, index) => (
                         <li key={index} className="text-md mb-2">
-                        {workout}
+                            {
+                                `${ workout.type[0].toUpperCase() }${ workout.type.slice(1) }, 
+                                ${ months[new Date(workout.date).getMonth()] } ${ new Date(workout.date).getDate() }, 
+                                ${ new Date(workout.date).getHours() + ":" + new Date(workout.date).getMinutes()} - 
+                                ${workout.distance} km, ${workout.duration} minutes`
+                            }
                         </li>
                     ))}
                     </ul>
@@ -215,7 +237,12 @@ export default function Dashboard() {
                     <ul className="list-inside list-disc">
                     {upcomingWorkoutsArray?.map((workout, index) => (
                         <li key={index} className="text-md mb-2">
-                        {workout}
+                            {
+                                `${ workout.type[0].toUpperCase() }${ workout.type.slice(1) }, 
+                                ${ months[new Date(workout.date).getMonth()] } ${ new Date(workout.date).getDate() }, 
+                                ${ new Date(workout.date).getHours() + ":" + new Date(workout.date).getMinutes()} - 
+                                ${workout.distance} km, ${workout.duration} minutes`
+                            }
                         </li>
                     ))}
                     </ul>

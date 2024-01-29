@@ -11,7 +11,6 @@ export default function SidebarBodyComponent({
     isFormVisible,
     setIsFormVisible,
     clickedCoords,
-    workouts,
     setWorkouts,
     workoutComponents, 
     setWorkoutComponents,
@@ -24,7 +23,6 @@ export default function SidebarBodyComponent({
                     isFormVisible={isFormVisible}
                     setIsFormVisible={setIsFormVisible}
                     clickedCoords={clickedCoords}
-                    workouts={workouts}
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}

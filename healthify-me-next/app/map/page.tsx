@@ -3,9 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import SidebarHeaderComponent from "@/components/sidebar-header";
 import SidebarBodyComponent from "@/components/sidebar-body";
-import SidebarAuthComponent from "@/components/sidebar-auth";
 import RunningComponent from "@/components/running";
 import CyclingComponent from "@/components/cycling";
 import SwimmingComponent from "@/components/swimming";
@@ -43,28 +41,54 @@ const Page = () => {
     const [workoutComponents, setWorkoutComponents] = useState<JSX.Element[]>([]);
 
     const renderWorkout = (workout: Workout) => {
-        if (workout.type === "running") return <RunningComponent workout={workout} />
-        if (workout.type === "cycling") return <CyclingComponent workout={workout} />
-        if (workout.type === "swimming") return <SwimmingComponent workout={workout} />
+        if (workout.type === "running") 
+            return <RunningComponent 
+                workout={workout} 
+                isLoggedIn={true} 
+                setWorkouts = {setWorkouts}
+                setWorkoutComponents = {setWorkoutComponents}
+            />
+        if (workout.type === "cycling") 
+            return <CyclingComponent 
+                workout={workout} 
+                isLoggedIn={true} 
+                setWorkouts = {setWorkouts}
+                setWorkoutComponents = {setWorkoutComponents}
+            />
+        if (workout.type === "swimming") 
+            return <SwimmingComponent 
+                workout={workout} 
+                isLoggedIn={true} 
+                setWorkouts = {setWorkouts}
+                setWorkoutComponents = {setWorkoutComponents}
+            />
         return <></>;
     };
 
     useEffect(() => {
+        // fetch user's workouts
         (async () => {
             try {
-              const storedWorkouts = await axiosInstance.post("http://localhost:3001/fetch");
-              const storedWorkoutsArray = []; const storedWorkoutsComponentsArray = [];
-              for (const workout of storedWorkouts.data) {
-                storedWorkoutsArray.push(workout.workout);
-                storedWorkoutsComponentsArray.push(renderWorkout(workout.workout));
-              }
-              setWorkouts([...workouts, ...storedWorkoutsArray]);
-              setWorkoutComponents([...workoutComponents, ...storedWorkoutsComponentsArray]);
+                const storedWorkoutsResponse = await axiosInstance.post("http://localhost:3001/fetch");
+
+                if (storedWorkoutsResponse.status === 200) {
+                    const storedWorkoutsArray = [];
+                    const storedWorkoutsComponentsArray = [];
+                    
+                    for (const workout of storedWorkoutsResponse.data) {
+                        storedWorkoutsArray.push(workout);
+                        storedWorkoutsComponentsArray.push(renderWorkout(workout));
+                    }
+                    
+                    setWorkouts([...storedWorkoutsArray]);
+                    setWorkoutComponents([ ...storedWorkoutsComponentsArray]);
+                } else throw new Error("Bad network response!");
             } catch (error) {
               console.error("Error fetching stored workouts:", error);
             }
         })();
 
+        // set user's current location
         navigator.geolocation.getCurrentPosition(position => {
           setUserLocation({
             lat: position.coords.latitude,
@@ -108,7 +132,6 @@ const Page = () => {
                     isFormVisible={isFormVisible}
                     setIsFormVisible={setIsFormVisible}
                     clickedCoords={clickedCoords}
-                    workouts={workouts}
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}

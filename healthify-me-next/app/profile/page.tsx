@@ -14,6 +14,7 @@ export async function getProps() {
     try {
         const response = await axiosInstance.get("http://localhost:3001/profile");
         if (!response || !response.data) throw new Error("Invalid response from server");
+
         return { props: response.data };
     } catch (error) {
         console.error("Error fetching profile data: ", error);
@@ -21,7 +22,7 @@ export async function getProps() {
             props: {
                 firstName: "NA",
                 lastName: "NA",
-                gender: "not-disclosed",
+                gender: "Choose not to disclose",
                 age: 1,
                 height: 1,
                 weight: 1,
@@ -31,7 +32,7 @@ export async function getProps() {
     }
 }
 
-export default function Dashboard() {
+export default function Profile() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -112,7 +113,7 @@ export default function Dashboard() {
     try {
         const response : any = await axiosInstance.post("http://localhost:3001/deleteProfile");
 
-        if (response.ok) {
+        if (response.status === 200) {
             // do stuff
             // router.push("/");
             window.location.href = "/";
@@ -177,10 +178,10 @@ export default function Dashboard() {
                     required
                     disabled={isLoading}
                     >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                    <option value="not-disclosed">Choose not to disclose</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Choose not to disclose">Choose not to disclose</option>
                 </select>
             </div>
       </div>
