@@ -46,17 +46,16 @@ export type mapProps = mapClickProps & {
     workouts: Workout[];
 };
 
-export type CyclingComponentProps = {
+export type WorkoutComponentProps = {
     workout: Workout;
-};
+    isLoggedIn: boolean;
+    setWorkouts: React.Dispatch<React.SetStateAction<Workout[]>>;
+    setWorkoutComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
+}
 
-export type RunningComponentProps = {
-    workout: Workout;
-};
-
-export type SwimmingComponentProps = {
-    workout: Workout;
-};
+export type CyclingComponentProps = WorkoutComponentProps;
+export type RunningComponentProps = WorkoutComponentProps;
+export type SwimmingComponentProps = WorkoutComponentProps;
 
 export type SidebarWorkoutProps = {
     workoutComponents: JSX.Element[];
@@ -69,7 +68,6 @@ export type SidebarBodyType = LoadingProps & {
 
 export type SidebarVisibilityProps = LoadingProps & {
     clickedCoords: LatLng;
-    workouts: Workout[];
     setWorkouts: React.Dispatch<React.SetStateAction<Workout[]>>;
     isFormVisible: boolean;
     setIsFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -104,4 +102,4 @@ export type ProfileDataType = {
     height: number;
     weight: number;
     target: number;
-  }
+}

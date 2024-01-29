@@ -17,9 +17,7 @@ export default function SidebarFormComponent({
     isFormVisible,
     setIsFormVisible,
     clickedCoords,
-    workouts,
     setWorkouts,
-    workoutComponents,
     setWorkoutComponents,
     isLoggedIn }: SidebarVisibilityProps) {
         // none of the below states save
@@ -32,9 +30,30 @@ export default function SidebarFormComponent({
         const [date, setDate] = useState<string>("");
 
         const renderWorkout = (workout: Workout) => {
-            if (workout.type === "running") return <RunningComponent workout={workout} />
-            if (workout.type === "cycling") return <CyclingComponent workout={workout} />
-            if (workout.type === "swimming") return <SwimmingComponent workout={workout} />
+            if (workout.type === "running") {
+                return <RunningComponent 
+                    workout={workout} 
+                    isLoggedIn={isLoggedIn}
+                    setWorkouts = {setWorkouts}
+                    setWorkoutComponents = {setWorkoutComponents}
+                />
+            }
+            if (workout.type === "cycling") {
+                return <CyclingComponent 
+                    workout={workout} 
+                    isLoggedIn={isLoggedIn}
+                    setWorkouts = {setWorkouts}
+                    setWorkoutComponents = {setWorkoutComponents}
+                />
+            }
+            if (workout.type === "swimming") {
+                return <SwimmingComponent 
+                    workout={workout} 
+                    isLoggedIn={isLoggedIn}
+                    setWorkouts = {setWorkouts}
+                    setWorkoutComponents = {setWorkoutComponents}
+                />
+            }
             return <></>;
         };
 
@@ -83,21 +102,24 @@ export default function SidebarFormComponent({
                         }
                     });
 
+                    const workoutResponse = await response.json();
                     let saveWorkoutResponse;
-                    isLoggedIn && (saveWorkoutResponse = await axiosInstance.post("http://localhost:3001/save", formData));
+                    isLoggedIn && 
+                        (saveWorkoutResponse = await axiosInstance.post("http://localhost:3001/save", {...formData, id: workoutResponse.id} ));
 
                     if (response.ok) {
-                        if (isLoggedIn && !(saveWorkoutResponse?.status === 201))
+                        if (isLoggedIn && !(saveWorkoutResponse?.status === 201)) {
                             throw new Error("Error while storing workout to database!");
-                        const responseWorkout: Workout = await response.json();
+                        }
+                        const responseWorkout: Workout = workoutResponse;
                         // add object to workout array, the state change automatically renders marker on the map
-                        setWorkouts([...workouts, responseWorkout]);
-                        const workoutComponent = renderWorkout(responseWorkout); 
+                        setWorkouts(currentWorkouts => [...currentWorkouts, responseWorkout]);
                         // add object to workoutComponents array, the state change automatically renders it on sidebar
-                        setWorkoutComponents([...workoutComponents, workoutComponent]);
+                        const workoutComponent = renderWorkout(responseWorkout); 
+                        setWorkoutComponents(currentComponents => [...currentComponents, workoutComponent]);
                         // hide the form
                         setIsFormVisible(false);
-                    } else throw new Error("Bad network response!");
+                    } else throw new Error("Bad network response!");          
                 } catch (error) {
                     console.error("Something went wrong while processing your request!", error);
                 } finally {

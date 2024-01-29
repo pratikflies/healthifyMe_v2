@@ -15,7 +15,6 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [snapshotSidebarBody, setSnapshotSidebarBody] = useState<string>(sidebarBody);
     const router = useRouter();
 
     const validation = ({ email, password }: authDataType) => {
@@ -29,7 +28,6 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault();
         setIsLoading(true);
-        setSnapshotSidebarBody(sidebarBody);
 
         const authData = {
             email,
@@ -53,7 +51,7 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
 
                 if (response.ok) {
                     const responseData = await response.json();
-                    if (snapshotSidebarBody === "login") {
+                    if (sidebarBody === "login") {
                         Cookie.set("token", responseData.token);
                         // router.refresh(); // try without this, also try router.reload()
                         // router.push("/dashboard");

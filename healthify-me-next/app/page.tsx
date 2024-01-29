@@ -81,7 +81,6 @@ const Page = () => {
                     isFormVisible={isFormVisible}
                     setIsFormVisible={setIsFormVisible}
                     clickedCoords={clickedCoords}
-                    workouts={workouts}
                     setWorkouts={setWorkouts}
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}

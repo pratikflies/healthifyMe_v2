@@ -58,10 +58,20 @@
     align-self: center;
     margin-bottom: 0.5rem;
   }
+
+  .logo-workout {
+    height: 2.3rem;
+    width: 2.3rem;
+    transition: transform 0.3s; 
+  }
+
+  .logo-workout:hover {
+    transform: scale(1.2);
+  }
   
   .workouts {
     list-style: none;
-    height: 28vh;
+    height: 62%;
     overflow-y: scroll;
     overflow-x: hidden;
   }

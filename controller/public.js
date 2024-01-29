@@ -23,7 +23,7 @@ exports.addWorkout = (req, res) => {
         dateObject,
       }
     );
-    
+
     res.status(201).json(workout);
   }
   catch (error) {
