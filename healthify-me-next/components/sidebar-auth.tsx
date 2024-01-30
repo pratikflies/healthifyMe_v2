@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { IconSpinner } from "@/components/ui/icons";
 import { authDataType } from "@/lib/types";
 import { SidebarBodyType } from "@/lib/types";
 
@@ -135,8 +134,8 @@ export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarB
                     </div>
                     <div className="form-group">
                         <Button disabled={isLoading} type="submit" className="form-button">
-                            {isLoading && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
-                            {sidebarBody === "login" ? "Login" : "Signup"}
+                            {isLoading && "Please Wait..."}
+                            {!isLoading && (sidebarBody === "login" ? "Login" : "Signup")}
                         </Button>
                     </div>
                 </form>

@@ -335,8 +335,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem 2.5rem;
   
-    /* Match height and activity boxes */
-    height: 9.25rem;
+    height: 10rem;
     transition: all 0.5s, transform 1ms;
   }
   
@@ -381,15 +380,17 @@
   
   .form__btn {
     font: inherit;
-    font-size: 1.1rem;
-    font-weight: 1000;
-    background-color: goldenrod;
-    color: var(--color-light--2);
+    font-size: 1.3rem;
+    font-weight: 600;
+    background-color: #ffb545;
+    color: black;
     border: none;
     border-radius: 5px;
-    width: 10rem;
-    height: 1.5rem;
+    width: 8rem;
+    height: 2rem;
     transition: all 0.5s;
+    margin-left: 165.5%;
+    cursor: pointer;
   }
   
   .form__btn:hover {

@@ -74,6 +74,8 @@
     height: 62%;
     overflow-y: scroll;
     overflow-x: hidden;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
   }
   
   .workouts::-webkit-scrollbar {
@@ -210,14 +212,13 @@
   .form {
     background-color: var(--color-dark--2);
     border-radius: 5px;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 2.75rem;
     margin-bottom: 1.75rem;
   
     display: grid;
-    grid-template-columns: 200px 200px;
-    gap: 0.5rem 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 2.5rem;
   
-    /* Match height and activity boxes */
     height: 11rem;
     transition: all 0.5s, transform 1ms;
   }
@@ -263,15 +264,17 @@
   
   .form__btn {
     font: inherit;
-    font-size: 1.1rem;
-    font-weight: 1000;
-    background-color: goldenrod;
-    color: var(--color-light--2);
+    font-size: 1.3rem;
+    font-weight: 600;
+    background-color: #ffb545;
+    color: black;
     border: none;
     border-radius: 5px;
-    width: 10rem;
-    height: 1.5rem;
+    width: 8rem;
+    height: 2rem;
     transition: all 0.5s;
+    margin-left: 46%;
+    cursor: pointer;
   }
   
   .form__btn:hover {
@@ -280,7 +283,7 @@
   }
   
   .copyright {
-    margin-top: auto;
+    margin-top: 0.5rem;
     font-size: 1.3rem;
     text-align: center;
     color: var(--color-light--1);
@@ -351,10 +354,11 @@
   .custom__btn {
     padding: 0.5rem 1rem;
     font: inherit;
-    font-size: 1.3rem;
-    background-color: var(--color-red);
+    font-size: medium;
+    background-color: inherit;
     color: var(--color-light--2);
-    border: none;
+    border-width: 1px;
+    border-color: #ffb545;
     border-radius: 5px;
   }
   
@@ -431,6 +435,8 @@
     justify-content: center;
     display: flex;
     gap: 4rem;
+    margin-bottom: 1.5rem;
+    margin-left: 2.5rem;
   }
   
   .button-container form {
@@ -440,27 +446,51 @@
   
   .button {
     padding: 10px 20px;
-    background-color: #4caf50;
+    background-color: inherit;
     color: white;
     text-align: center;
     text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
+    font-size: 1.5rem;
+    font-weight: lighter;
+    border-width: 1px;
+    border-color: #ffb545;
     border-radius: 10px;
     cursor: pointer;
-    transition: all 0.5s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .button:hover {
-    background-color: #45a049;
-    transform: translateY(-2px) scale(1.1);
   }
   
   .button:focus {
     outline: none;
   }
+
+  .centered-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .centered-content label {
+    margin-top: 1rem;
+    font-size: 1.7rem;
+    font-weight: light;
+    margin-bottom: 0.5rem;
+    margin-right: 1rem;
+  }
+  
+  .centered-content select {
+    margin-top: 1rem;
+    background-color: black;
+    color: white;
+    font-size: 1.5rem; 
+    padding: 0.3rem; 
+    border-radius: 10px;
+    margin-bottom: 0.5rem; 
+  }
+  
+  .centered-content select option {
+    background-color: white;
+    color: black;
+  }  
   
   @media (max-width: 500px) {
     html {

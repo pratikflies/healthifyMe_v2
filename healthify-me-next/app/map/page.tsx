@@ -9,6 +9,8 @@ import CyclingComponent from "@/components/cycling";
 import SwimmingComponent from "@/components/swimming";
 import SidebarFooterComponent from "@/components/sidebar-footer";
 import { LatLng, Workout, UserLocationType } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import axiosInstance from "@/lib/axiosInstance";
 import "./map.css";
 
@@ -39,6 +41,8 @@ const Page = () => {
     });
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [workoutComponents, setWorkoutComponents] = useState<JSX.Element[]>([]);
+    const [filterType, setFilterType] = useState<string>("Show All");
+    const [showSortButtons, setShowSortButtons] = useState<boolean>(false);
 
     const renderWorkout = (workout: Workout) => {
         if (workout.type === "running") 
@@ -102,13 +106,82 @@ const Page = () => {
         });
     }, []);
 
+    const handleLogout = async () => {
+        setIsLoading(true);
+    
+        try {
+            const response : any = await axiosInstance.post("http://localhost:3001/logout");
+    
+            if (response.status === 200) {
+                // do stuff
+                // router.push("/");
+                window.location.href = "/";
+            } else throw new Error("Bad network response!");
+        } catch (error) {
+            console.error("Something went wrong while logging out!", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleClearAll = async () => {
+        setIsLoading(true);
+    
+        try {
+            const response : any = await axiosInstance.post("http://localhost:3001/clearAll");
+    
+            if (response.status === 200) {
+                // do stuff
+                // router.push("/");
+                window.location.href = "/";
+            } else throw new Error("Bad network response!");
+        } catch (error) {
+            console.error("Something went wrong while clearing all workouts!", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDashboard = () => {
+        setIsLoading(true);
+    
+        try {
+            // router.push("/");
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Failed to switch to dashboard!", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilterType(e.target.value);
+    };
+
+    const handleShowSortButtons = () => {
+        setShowSortButtons(!showSortButtons);
+    };
+
+   const sortWorkoutsByDate = () => {};
+
+   const sortWorkoutsByDistance = () => {}
+
+   const sortWorkoutsByDuration = () => {};
+
     return (
         <>
             <div className="sidebar">
                 <div className="button-container">
-                    <button type="submit" className="button">Logout</button>
-                    <button type="submit" className="button" id="reset-button" style={{backgroundColor: "#FF0000"}}>Reset</button>
-                    <button type="submit" className="button">Dashboard</button>
+                    <Button className="button" disabled={isLoading} onClick={handleLogout}>
+                        {isLoading ? "Please Wait..." : "Logout"}
+                    </Button>
+                    <Button className="button" disabled={isLoading} id="reset-button" style={{backgroundColor: "#FF0000"}} onClick={handleClearAll}>
+                        {isLoading ? "Please Wait..." : "Clear All"}
+                    </Button>
+                    <Button className="button" disabled={isLoading} onClick={handleDashboard}>
+                        {isLoading ? "Please Wait..." : "Dashboard"}
+                    </Button>
                 </div>
                 <Image 
                     src="/logo.png" 
@@ -117,14 +190,14 @@ const Page = () => {
                     height={300} 
                     className="logo"
                 />
-                <div className="custom__btns dropdown">
-                    <button className="custom__btn btn--filter">Filter By</button>
-                    <div className="dropdown-content">
-                        <a href="#" data-option="running">Running 🏃‍♂️</a>
-                        <a href="#" data-option="cycling">Cycling 🚴</a>
-                        <a href="#" data-option="swimming">Swimming 🏊‍♀️</a>
-                        <a href="#" data-option="show-all">Show All</a>
-                    </div>
+                <div className="centered-content">
+                    <Label>Filter By</Label>
+                    <select value={filterType} disabled={isLoading} onChange={handleFilterTypeChange}>
+                        <option value="Running">Running 🏃‍♂️</option>
+                        <option value="Cycling">Cycling 🚴</option>
+                        <option value="Swimming">Swimming 🏊‍♀️</option>
+                        <option value="Show All">Show All</option>
+                    </select>
                 </div>
                 <SidebarBodyComponent 
                     isLoading={isLoading}
@@ -137,16 +210,26 @@ const Page = () => {
                     setWorkoutComponents={setWorkoutComponents}
                     isLoggedIn={true}
                 />
-                <SidebarFooterComponent />
                 <div className="controls">
-                    <button className="show__sort__btns">Sort</button>
+                    <Button disabled={isLoading} className="show__sort__btns" onClick={handleShowSortButtons}>
+                        {isLoading ? "Please Wait..." : "Sort"}
+                    </Button>
                 </div>
-                <div className="sort__buttons__container zero__height">
-                    <button data-type ="date" className="sort__button"><span className="workout__icon">&#128198</span>  <span className="arrow">&#129045</span></button>
-                    <button data-type ="distance" className="sort__button"><span className="workout__icon">🏃‍♂️</span> <span className="arrow">&#129045</span></button>
-                    <button data-type ="duration" className="sort__button"><span className="workout__icon">⏱</span> <span className="arrow">&#129045</span></button>
-                </div>
-                <hr className="sort__devider"></hr>
+                {showSortButtons && <div className="sort__buttons__container">
+                    <Button disabled={isLoading} data-type ="date" className="sort__button" onClick={sortWorkoutsByDate}>
+                        <span className="workout__icon">{'\u{1F4C6}'}</span>  
+                        <span className="arrow">{'\u2191'}</span>
+                    </Button>
+                    <Button disabled={isLoading} data-type ="distance" className="sort__button" onClick={sortWorkoutsByDistance}>
+                        <span className="workout__icon">🏃‍♂️</span>
+                        <span className="arrow">{'\u2191'}</span>
+                    </Button>
+                    <Button disabled={isLoading} data-type ="duration" className="sort__button" onClick={sortWorkoutsByDuration}>
+                        <span className="workout__icon">⏱</span>
+                        <span className="arrow">{'\u2191'}</span>
+                    </Button>
+                </div>}
+                <SidebarFooterComponent />
             </div>
 
             <div id="map">

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { IconSpinner } from "@/components/ui/icons";
 import { ProfileDataType } from "@/lib/types";
 import { useRouter } from "next/router";
 import axiosInstance from "@/lib/axiosInstance";
@@ -240,15 +239,13 @@ export default function Profile() {
 
       <div className="flex">
         <Button disabled={isLoading} type="submit" className="mr-8">
-            {isLoading && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
-            Update Profile
+            {isLoading ? "Please Wait..." : "Update Profile"}
         </Button>
-        <Button variant={"destructive"} className="mr-8" onClick={handleDeleteProfile}>
-          {isLoading && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
-          Delete Profile
+        <Button disabled={isLoading} variant={"destructive"} className="mr-8" onClick={handleDeleteProfile}>
+            {isLoading ? "Please Wait..." : "Delete Profile"}
         </Button>
-        <Button variant={"outline"} className="" onClick={handleResetForm}>
-          Reset Form
+        <Button disabled={isLoading} variant={"outline"} className="" onClick={handleResetForm}>
+            {isLoading ? "Please Wait..." : "Reset Form"}
         </Button>
       </div>
     </div>
