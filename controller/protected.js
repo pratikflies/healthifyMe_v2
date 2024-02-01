@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Workout = require("../models/workout");
 const User = require("../models/user");
 const Image = require("../models/image");
+const tokenLog = require("../models/tokenLog");
 const fileHelper = require("../util/file");
 const { validationResult } = require("express-validator");
 const { WorkoutFactory } = require("../data-engine/workoutFactory");
@@ -22,7 +23,7 @@ exports.getUserProfile = async (req, res) => {
       bmi: (parseFloat(profile?.weight || 1)/square(profile?.height || 1)).toFixed(2),
     });
   } catch (error) {
-    console.error("Error while fetching user profile: ", error);
+    console.error(`Error while fetching profile for user: ${req.userId}, `, error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -58,9 +59,20 @@ exports.postUserProfile = async (req, res) => {
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Error finding and updating user profile:", error);
+    console.error(`Error finding and updating profile for user: ${req.userId}, `, error);
     res.status(500).json({ message: error.message });
   }  
+};
+
+function generateRecommendation(runningCount, swimmingCount, cyclingCount) {
+  let maxi = Math.max(runningCount, swimmingCount, cyclingCount);
+  if (runningCount * 2 < maxi)
+    return "🏃 to have a balanced workout schedule.";
+  else if (swimmingCount * 2 < maxi)
+    return "🏊‍♀️ to have a balanced workout schedule.";
+  else if (cyclingCount * 2 < maxi)
+    return "🚴‍♂️ to have a balanced workout schedule.";
+  return "Perfectly balanced! 🤹";
 };
 
 exports.getDashboard = async (req, res) => {
@@ -71,7 +83,6 @@ exports.getDashboard = async (req, res) => {
     // retrieve all documents from the Workouts collection
     const workoutDocuments = await Workout.find({ userId: req.userId });
     const workouts = workoutDocuments.map(doc => doc.workout);
-
 
     // create an empty array to store workouts with a date greater than the current date
     const upcomingWorkoutsArray = []; const completedWorkoutsArray = [];
@@ -97,19 +108,25 @@ exports.getDashboard = async (req, res) => {
         timeSpent += workout.duration;
       }
     });
+
+    const runningCount = upcomingRunningCount + completedRunningCount;
+    const cyclingCount = upcomingCyclingCount + completedCyclingCount;
+    const swimmingCount = upcomingSwimmingCount + completedSwimmingCount;
+    const recommendation = generateRecommendation(runningCount, swimmingCount, cyclingCount);
       
     return res.status(200).json({
-      runningCount: upcomingRunningCount + completedRunningCount,
-      cyclingCount: upcomingCyclingCount + completedCyclingCount,
-      swimmingCount: upcomingSwimmingCount + completedSwimmingCount,
+      runningCount,
+      cyclingCount,
+      swimmingCount,
       completedWorkoutsArray,
       upcomingWorkoutsArray,
       distanceCovered,
       timeSpent,
+      recommendation,
     });
   } catch (error) {
-    console.error("Error fetching user's dashboard: ", error);
-    return res.status(200).json({ message: error.message });
+    console.error(`Error fetching dashboard for user: ${req.userId} `, error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -124,7 +141,7 @@ exports.fetchWorkout = async (req, res) => {
     });
     res.status(200).json(upcomingWorkoutsArray);
   } catch (error) {
-    console.error("Error while fetching user workouts: ", error);
+    console.error(`Error while fetching workouts for user: ${req.userId}, `, error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -154,7 +171,7 @@ exports.saveWorkout = async (req, res) => {
     res.status(201).json({ success: true });
   }
   catch (error) {
-    console.error(`Error adding workout of type: ${type}`, error);
+    console.error(`Error adding workout of type: ${type} for user: ${req.userId}, `, error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -165,12 +182,23 @@ exports.deleteWorkout = async (req, res) => {
     const result = await Workout.deleteOne({ "workout.id": workoutId });
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error(`Error deleting workout with id: ${workoutId}!`, error.message);
+    console.error(`Error deleting workout with id: ${workoutId} for user: ${req.userId}!`, error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.resetUser = (req, res, next) => {
+exports.postLogout = async (req, res) => {
+  try {
+    const result = await tokenLog.deleteOne({ token: req.body.token });
+    console.log(`Logged out user: ${req.userId}.`);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(`Error logging out user: ${req.userId}!`);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.resetUser = (req, res) => {
   Workout.deleteMany({ userId: req.user._id })
     .then((result) => {
       console.log(`${result.deletedCount} documents deleted!`);

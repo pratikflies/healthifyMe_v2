@@ -66,6 +66,7 @@ export default function SidebarFormComponent({
             const validateElevationGain = isFinite(formData.elevationGain);
             const validateStrokes = isFinite(formData.strokes) && formData.strokes > 0;
 
+            // loose checks
             return (validateCadence || validateElevationGain || validateStrokes) 
                 && (formData.distance > 0 
                 && formData.duration > 0);

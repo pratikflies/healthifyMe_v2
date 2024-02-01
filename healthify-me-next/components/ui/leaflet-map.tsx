@@ -23,14 +23,18 @@ const MapClickHandler = ({ setIsFormVisible, setClickedCoords, setSidebarBody }:
   // this component does not render anything
 };
 
-export default function LeafletMap({ userLocation, workouts, setIsFormVisible, setClickedCoords, setSidebarBody }: mapProps) {
+export default function LeafletMap({ userLocation, workouts, setIsFormVisible, setClickedCoords, setSidebarBody, theme }: mapProps) {
   const { lat, lng, zoomLevel } = userLocation;
   return (
     <MapContainer style={{ height: "100%", width: "100%" }} center={[lat, lng]} zoom={zoomLevel} scrollWheelZoom={false}>
-      <TileLayer
+      {!theme && (<TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      />)}
+      {theme && (<TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      />)}
       {/* Put a marker on user's location */}
       <Marker position={[lat, lng]} icon={userIcon}>
           <Popup maxWidth={250} minWidth={100} autoClose={false} closeOnClick={false}>

@@ -2,17 +2,16 @@
 
 import React from 'react';
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
-
-const data = [
-  { name: 'Category A', value: 400 },
-  { name: 'Category B', value: 300 },
-  { name: 'Category C', value: 200 },
-  { name: 'Category D', value: 100 },
-];
+import { PieChartProps } from '@/lib/types';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-const PieChartComponent = () => {
+const PieChartComponent = ({ runningCount, cyclingCount, swimmingCount } : PieChartProps) => {
+   const data = [
+    { name: "Running", value: runningCount },
+    { name: "Cycling", value: cyclingCount },
+    { name: "Swimming", value: swimmingCount },
+  ];
   return (
     <PieChart width={400} height={400}>
       <Pie

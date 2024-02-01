@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import dynamic from "next/dynamic";
 import axiosInstance from "@/lib/axiosInstance";
 import "./dashboard.css";
+import { Workout } from "@/lib/types";
 
 const PieChartComponent = dynamic(() => import("@/components/ui/pie-chart"),
     {
@@ -47,15 +48,16 @@ export async function getProps() {
 
         const {
             runningCount, cyclingCount, swimmingCount, // for pie-chart
-            completedWorkoutsArray, upcomingWorkoutsArray, distanceCovered, timeSpent, caloriesBurnt, // for statistics
+            completedWorkoutsArray, upcomingWorkoutsArray, distanceCovered, timeSpent, // for statistics
             recommendation, // for recommendation
         } = dashboardResponse.data;
 
         const { 
-            firstName, lastName, age, gender, bmi, target,
+            firstName, lastName, age, gender, bmi, target, weight
         } = profileResponse.data;
 
         const progress = ((distanceCovered / target) * 100).toFixed(2);
+        const caloriesBurnt = ((timeSpent * (3.5 * 3.5 * weight)) / 200).toFixed(2);
     
         return {
             props: {
@@ -68,14 +70,46 @@ export async function getProps() {
     } catch (error) {
         console.error("Error fetching dashboard's data: ", error);
         return {
-          props: {}
-        };
+            props: {
+              name: "NA NA",
+              age: 1,
+              gender: "Choose not to disclose",
+              bmi: 1,
+              target: 1,
+              progress: "1",
+              completedWorkoutsArray: [],
+              upcomingWorkoutsArray: [], 
+              distanceCovered: 1,
+              timeSpent: 1,
+              caloriesBurnt: "1",
+              runningCount: 1,
+              cyclingCount: 1,
+              swimmingCount: 1,
+              recommendation: "NA",
+            }
+        };  
     }
 }
   
 
 export default function Dashboard() {
-  const [props, setProps] = useState({}); // set loading state here
+  const [props, setProps] = useState({
+    name: "NA NA",
+    age: 1,
+    gender: "Choose not to disclose",
+    bmi: 1,
+    target: 1,
+    progress: "1",
+    completedWorkoutsArray: [],
+    upcomingWorkoutsArray: [], 
+    distanceCovered: 1,
+    timeSpent: 1,
+    caloriesBurnt: "1",
+    runningCount: 1,
+    cyclingCount: 1,
+    swimmingCount: 1,
+    recommendation: "NA",
+  });
 
   useEffect(() => {
     getProps()
@@ -180,9 +214,9 @@ export default function Dashboard() {
                     </p>
                     <div className="flex flex-row items-center space-x-2">
                         <PieChartComponent 
-                            /*runningCount={runningCount}
+                            runningCount={runningCount}
                             cyclingCount={cyclingCount}
-                            swimmingCount={swimmingCount}*/
+                            swimmingCount={swimmingCount}
                         />
                     </div>
                 </div>
@@ -195,10 +229,8 @@ export default function Dashboard() {
                     </p>
                     <div className="flex flex-row items-center space-x-2">
                         <BarChartComponent 
-                            /*
                             distanceCovered={distanceCovered}
                             target={target}
-                            */
                         />
                     </div>
                 </div>
@@ -215,7 +247,7 @@ export default function Dashboard() {
                         Past efforts, present pride.
                     </p>
                     <ul className="list-inside list-disc">
-                    {completedWorkoutsArray?.map((workout, index) => (
+                    {completedWorkoutsArray?.map((workout: Workout, index: number) => (
                         <li key={index} className="text-md mb-2">
                             {
                                 `${ workout.type[0].toUpperCase() }${ workout.type.slice(1) }, 
@@ -235,7 +267,7 @@ export default function Dashboard() {
                         Get! Set! Go!
                     </p>
                     <ul className="list-inside list-disc">
-                    {upcomingWorkoutsArray?.map((workout, index) => (
+                    {upcomingWorkoutsArray?.map((workout: Workout, index: number) => (
                         <li key={index} className="text-md mb-2">
                             {
                                 `${ workout.type[0].toUpperCase() }${ workout.type.slice(1) }, 

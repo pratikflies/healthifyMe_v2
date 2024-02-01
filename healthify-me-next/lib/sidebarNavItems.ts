@@ -8,7 +8,7 @@ export const sidebarNavItems = [
       route: "dashboard"
     },
     {
-      title: "Edit Profile",
+      title: "View Profile",
       route: "profile"
     },
     {

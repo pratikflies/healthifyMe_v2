@@ -12,6 +12,8 @@ import { LatLng, Workout, UserLocationType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/lib/axiosInstance";
+import DropdownMenuDemo from "@/components/ui/dropdown/dropdown";
+import SwitchDemo from "@/components/ui/switch/switch";
 import "./map.css";
 
 const DEFAULT_LAT = 22.6503867;
@@ -41,9 +43,13 @@ const Page = () => {
     });
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [workoutComponents, setWorkoutComponents] = useState<JSX.Element[]>([]);
-    const [filterType, setFilterType] = useState<string>("Show All");
+    const [filterType, setFilterType] = useState<string>("showAll");
     const [showSortButtons, setShowSortButtons] = useState<boolean>(false);
-
+    const [isDateAscending, setIsDateAscending] = useState<boolean>(false);
+    const [isDistanceAscending, setIsDistanceAscending] = useState<boolean>(false);
+    const [isDurationAscending, setIsDurationAscending] = useState<boolean>(false);
+    const [theme, setTheme] = useState<boolean>(false);
+ 
     const renderWorkout = (workout: Workout) => {
         if (workout.type === "running") 
             return <RunningComponent 
@@ -106,82 +112,77 @@ const Page = () => {
         });
     }, []);
 
-    const handleLogout = async () => {
-        setIsLoading(true);
-    
-        try {
-            const response : any = await axiosInstance.post("http://localhost:3001/logout");
-    
-            if (response.status === 200) {
-                // do stuff
-                // router.push("/");
-                window.location.href = "/";
-            } else throw new Error("Bad network response!");
-        } catch (error) {
-            console.error("Something went wrong while logging out!", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleClearAll = async () => {
-        setIsLoading(true);
-    
-        try {
-            const response : any = await axiosInstance.post("http://localhost:3001/clearAll");
-    
-            if (response.status === 200) {
-                // do stuff
-                // router.push("/");
-                window.location.href = "/";
-            } else throw new Error("Bad network response!");
-        } catch (error) {
-            console.error("Something went wrong while clearing all workouts!", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleDashboard = () => {
-        setIsLoading(true);
-    
-        try {
-            // router.push("/");
-            window.location.href = "/";
-        } catch (error) {
-            console.error("Failed to switch to dashboard!", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
+    // const [unfilteredWorkouts, setUnfilteredWorkouts] = useState<Workout[]>([]);
+    // const [unfilteredWorkoutComponents, setUnfilteredWorkoutComponents] = useState<JSX.Element[]>([]);
     const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilterType(e.target.value);
+        const selectedFilterType = e.target.value;
+        setFilterType(selectedFilterType);
+    
+        const filteredWorkouts = workouts.filter(workout => workout.type === selectedFilterType);
+        const filteredWorkoutComponents = workoutComponents.filter(workoutComponent => workoutComponent.props.workout.type === selectedFilterType);
+        setWorkouts([...filteredWorkouts]);
+        setWorkoutComponents([...filteredWorkoutComponents]);
     };
-
+    
     const handleShowSortButtons = () => {
         setShowSortButtons(!showSortButtons);
     };
 
-   const sortWorkoutsByDate = () => {};
+    const sortWorkoutsByDate = () => {
+        if (!isDateAscending) {
+            workoutComponents.sort((a, b) => {
+                const dateA = new Date(a.props.workout.date);
+                const dateB = new Date(b.props.workout.date);
+                return dateA.getTime() - dateB.getTime();
+            });
+        } else {
+            workoutComponents.sort((a, b) => {
+                const dateA = new Date(a.props.workout.date);
+                const dateB = new Date(b.props.workout.date);
+                return dateB.getTime() - dateA.getTime();
+            });
+        }
+        setIsDateAscending(!isDateAscending);
+        setWorkoutComponents([...workoutComponents]);
+    };
 
-   const sortWorkoutsByDistance = () => {}
+   const sortWorkoutsByDistance = () => {
+        if (!isDistanceAscending) {
+            workoutComponents.sort((a, b) => {
+                return (a.props.workout.distance) - (b.props.workout.distance);
+            });
+        } else {
+            workoutComponents.sort((a, b) => {
+                return (b.props.workout.distance) - (a.props.workout.distance);
+            });
+        }
+        setIsDistanceAscending(!isDistanceAscending);
+        setWorkoutComponents([...workoutComponents]);
+    };
 
-   const sortWorkoutsByDuration = () => {};
+    const sortWorkoutsByDuration = () => {
+        if (!isDurationAscending) {
+            workoutComponents.sort((a, b) => {
+                return (a.props.workout.duration) - (b.props.workout.duration);
+            });
+        } else {
+            workoutComponents.sort((a, b) => {
+                return (b.props.workout.duration) - (a.props.workout.duration);
+            });
+        }
+        setIsDurationAscending(!isDurationAscending);
+        setWorkoutComponents([...workoutComponents]);
+    };
 
     return (
         <>
             <div className="sidebar">
-                <div className="button-container">
-                    <Button className="button" disabled={isLoading} onClick={handleLogout}>
-                        {isLoading ? "Please Wait..." : "Logout"}
-                    </Button>
-                    <Button className="button" disabled={isLoading} id="reset-button" style={{backgroundColor: "#FF0000"}} onClick={handleClearAll}>
-                        {isLoading ? "Please Wait..." : "Clear All"}
-                    </Button>
-                    <Button className="button" disabled={isLoading} onClick={handleDashboard}>
-                        {isLoading ? "Please Wait..." : "Dashboard"}
-                    </Button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <DropdownMenuDemo />
+                    <SwitchDemo 
+                        theme={theme}
+                        setTheme={setTheme} 
+                    />
                 </div>
                 <Image 
                     src="/logo.png" 
@@ -193,10 +194,10 @@ const Page = () => {
                 <div className="centered-content">
                     <Label>Filter By</Label>
                     <select value={filterType} disabled={isLoading} onChange={handleFilterTypeChange}>
-                        <option value="Running">Running 🏃‍♂️</option>
-                        <option value="Cycling">Cycling 🚴</option>
-                        <option value="Swimming">Swimming 🏊‍♀️</option>
-                        <option value="Show All">Show All</option>
+                        <option value="running">Running 🏃‍♂️</option>
+                        <option value="cycling">Cycling 🚴</option>
+                        <option value="swimming">Swimming 🏊‍♀️</option>
+                        <option value="showAll">Show All</option>
                     </select>
                 </div>
                 <SidebarBodyComponent 
@@ -218,15 +219,15 @@ const Page = () => {
                 {showSortButtons && <div className="sort__buttons__container">
                     <Button disabled={isLoading} data-type ="date" className="sort__button" onClick={sortWorkoutsByDate}>
                         <span className="workout__icon">{'\u{1F4C6}'}</span>  
-                        <span className="arrow">{'\u2191'}</span>
+                        <span className="arrow">{isDateAscending ? '\u2193' : '\u2191'}</span>
                     </Button>
                     <Button disabled={isLoading} data-type ="distance" className="sort__button" onClick={sortWorkoutsByDistance}>
                         <span className="workout__icon">🏃‍♂️</span>
-                        <span className="arrow">{'\u2191'}</span>
+                        <span className="arrow">{isDistanceAscending ? '\u2193' : '\u2191'}</span>
                     </Button>
                     <Button disabled={isLoading} data-type ="duration" className="sort__button" onClick={sortWorkoutsByDuration}>
                         <span className="workout__icon">⏱</span>
-                        <span className="arrow">{'\u2191'}</span>
+                        <span className="arrow">{isDurationAscending ? '\u2193' : '\u2191'}</span>
                     </Button>
                 </div>}
                 <SidebarFooterComponent />
@@ -241,6 +242,7 @@ const Page = () => {
                         setIsFormVisible={setIsFormVisible}
                         setClickedCoords={setClickedCoords}
                         setSidebarBody={setSidebarBody}
+                        theme={theme}
                     />
                 )}
             </div>

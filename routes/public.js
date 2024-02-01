@@ -14,8 +14,7 @@ router.get("/signup", publicController.getSignup);
 router.get("/reset", publicController.getReset);
 router.get("/reset/:token", publicController.getNewPassword);
 router.get("/contact-us", publicController.getContact);
-router.get("/logout", publicController.postLogout);
-router.post("/logout", publicController.postLogout);
+// router.get("/logout", publicController.postLogout);
 router.post("/login", publicController.postLogin);
 router.post("/signup", publicController.postSignup);
 router.post(

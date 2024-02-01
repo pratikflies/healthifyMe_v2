@@ -17,6 +17,7 @@ router.post("/save", isAuth, protectedController.saveWorkout);
 router.post("/delete", isAuth, protectedController.deleteWorkout);
 // router.delete("/reset", isAuth, protectedController.resetUser);
 router.post("/delete-profile", isAuth, protectedController.deleteProfile);
+router.post("/logout", isAuth, protectedController.postLogout);
 // router.get("/gallery", isAuth, protectedController.getGallery);
 router.post(
   "/add-image",
