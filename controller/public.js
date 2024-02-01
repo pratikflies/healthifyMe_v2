@@ -161,14 +161,6 @@ exports.postSignup = async (req, res) => {
   }
 };
 
-exports.postLogout = (req, res, next) => {
-  //destroying session on logout;
-  req.session.destroy((err) => {
-    console.log(err);
-    res.redirect("/login");
-  });
-};
-
 exports.getReset = (req, res, next) => {
   let message = req.flash("error");
   if (message.length > 0) message = message[0];

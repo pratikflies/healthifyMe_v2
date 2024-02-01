@@ -9,7 +9,11 @@ import CyclingComponent from "@/components/cycling";
 import SwimmingComponent from "@/components/swimming";
 import SidebarFooterComponent from "@/components/sidebar-footer";
 import { LatLng, Workout, UserLocationType } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import axiosInstance from "@/lib/axiosInstance";
+import DropdownMenuDemo from "@/components/ui/dropdown/dropdown";
+import SwitchDemo from "@/components/ui/switch/switch";
 import "./map.css";
 
 const DEFAULT_LAT = 22.6503867;
@@ -39,7 +43,13 @@ const Page = () => {
     });
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [workoutComponents, setWorkoutComponents] = useState<JSX.Element[]>([]);
-
+    const [filterType, setFilterType] = useState<string>("showAll");
+    const [showSortButtons, setShowSortButtons] = useState<boolean>(false);
+    const [isDateAscending, setIsDateAscending] = useState<boolean>(false);
+    const [isDistanceAscending, setIsDistanceAscending] = useState<boolean>(false);
+    const [isDurationAscending, setIsDurationAscending] = useState<boolean>(false);
+    const [theme, setTheme] = useState<boolean>(false);
+ 
     const renderWorkout = (workout: Workout) => {
         if (workout.type === "running") 
             return <RunningComponent 
@@ -102,13 +112,77 @@ const Page = () => {
         });
     }, []);
 
+    // const [unfilteredWorkouts, setUnfilteredWorkouts] = useState<Workout[]>([]);
+    // const [unfilteredWorkoutComponents, setUnfilteredWorkoutComponents] = useState<JSX.Element[]>([]);
+    const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedFilterType = e.target.value;
+        setFilterType(selectedFilterType);
+    
+        const filteredWorkouts = workouts.filter(workout => workout.type === selectedFilterType);
+        const filteredWorkoutComponents = workoutComponents.filter(workoutComponent => workoutComponent.props.workout.type === selectedFilterType);
+        setWorkouts([...filteredWorkouts]);
+        setWorkoutComponents([...filteredWorkoutComponents]);
+    };
+    
+    const handleShowSortButtons = () => {
+        setShowSortButtons(!showSortButtons);
+    };
+
+    const sortWorkoutsByDate = () => {
+        if (!isDateAscending) {
+            workoutComponents.sort((a, b) => {
+                const dateA = new Date(a.props.workout.date);
+                const dateB = new Date(b.props.workout.date);
+                return dateA.getTime() - dateB.getTime();
+            });
+        } else {
+            workoutComponents.sort((a, b) => {
+                const dateA = new Date(a.props.workout.date);
+                const dateB = new Date(b.props.workout.date);
+                return dateB.getTime() - dateA.getTime();
+            });
+        }
+        setIsDateAscending(!isDateAscending);
+        setWorkoutComponents([...workoutComponents]);
+    };
+
+   const sortWorkoutsByDistance = () => {
+        if (!isDistanceAscending) {
+            workoutComponents.sort((a, b) => {
+                return (a.props.workout.distance) - (b.props.workout.distance);
+            });
+        } else {
+            workoutComponents.sort((a, b) => {
+                return (b.props.workout.distance) - (a.props.workout.distance);
+            });
+        }
+        setIsDistanceAscending(!isDistanceAscending);
+        setWorkoutComponents([...workoutComponents]);
+    };
+
+    const sortWorkoutsByDuration = () => {
+        if (!isDurationAscending) {
+            workoutComponents.sort((a, b) => {
+                return (a.props.workout.duration) - (b.props.workout.duration);
+            });
+        } else {
+            workoutComponents.sort((a, b) => {
+                return (b.props.workout.duration) - (a.props.workout.duration);
+            });
+        }
+        setIsDurationAscending(!isDurationAscending);
+        setWorkoutComponents([...workoutComponents]);
+    };
+
     return (
         <>
             <div className="sidebar">
-                <div className="button-container">
-                    <button type="submit" className="button">Logout</button>
-                    <button type="submit" className="button" id="reset-button" style={{backgroundColor: "#FF0000"}}>Reset</button>
-                    <button type="submit" className="button">Dashboard</button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <DropdownMenuDemo />
+                    <SwitchDemo 
+                        theme={theme}
+                        setTheme={setTheme} 
+                    />
                 </div>
                 <Image 
                     src="/logo.png" 
@@ -117,14 +191,14 @@ const Page = () => {
                     height={300} 
                     className="logo"
                 />
-                <div className="custom__btns dropdown">
-                    <button className="custom__btn btn--filter">Filter By</button>
-                    <div className="dropdown-content">
-                        <a href="#" data-option="running">Running 🏃‍♂️</a>
-                        <a href="#" data-option="cycling">Cycling 🚴</a>
-                        <a href="#" data-option="swimming">Swimming 🏊‍♀️</a>
-                        <a href="#" data-option="show-all">Show All</a>
-                    </div>
+                <div className="centered-content">
+                    <Label>Filter By</Label>
+                    <select value={filterType} disabled={isLoading} onChange={handleFilterTypeChange}>
+                        <option value="running">Running 🏃‍♂️</option>
+                        <option value="cycling">Cycling 🚴</option>
+                        <option value="swimming">Swimming 🏊‍♀️</option>
+                        <option value="showAll">Show All</option>
+                    </select>
                 </div>
                 <SidebarBodyComponent 
                     isLoading={isLoading}
@@ -137,16 +211,26 @@ const Page = () => {
                     setWorkoutComponents={setWorkoutComponents}
                     isLoggedIn={true}
                 />
-                <SidebarFooterComponent />
                 <div className="controls">
-                    <button className="show__sort__btns">Sort</button>
+                    <Button disabled={isLoading} className="show__sort__btns" onClick={handleShowSortButtons}>
+                        {isLoading ? "Please Wait..." : "Sort"}
+                    </Button>
                 </div>
-                <div className="sort__buttons__container zero__height">
-                    <button data-type ="date" className="sort__button"><span className="workout__icon">&#128198</span>  <span className="arrow">&#129045</span></button>
-                    <button data-type ="distance" className="sort__button"><span className="workout__icon">🏃‍♂️</span> <span className="arrow">&#129045</span></button>
-                    <button data-type ="duration" className="sort__button"><span className="workout__icon">⏱</span> <span className="arrow">&#129045</span></button>
-                </div>
-                <hr className="sort__devider"></hr>
+                {showSortButtons && <div className="sort__buttons__container">
+                    <Button disabled={isLoading} data-type ="date" className="sort__button" onClick={sortWorkoutsByDate}>
+                        <span className="workout__icon">{'\u{1F4C6}'}</span>  
+                        <span className="arrow">{isDateAscending ? '\u2193' : '\u2191'}</span>
+                    </Button>
+                    <Button disabled={isLoading} data-type ="distance" className="sort__button" onClick={sortWorkoutsByDistance}>
+                        <span className="workout__icon">🏃‍♂️</span>
+                        <span className="arrow">{isDistanceAscending ? '\u2193' : '\u2191'}</span>
+                    </Button>
+                    <Button disabled={isLoading} data-type ="duration" className="sort__button" onClick={sortWorkoutsByDuration}>
+                        <span className="workout__icon">⏱</span>
+                        <span className="arrow">{isDurationAscending ? '\u2193' : '\u2191'}</span>
+                    </Button>
+                </div>}
+                <SidebarFooterComponent />
             </div>
 
             <div id="map">
@@ -158,6 +242,7 @@ const Page = () => {
                         setIsFormVisible={setIsFormVisible}
                         setClickedCoords={setClickedCoords}
                         setSidebarBody={setSidebarBody}
+                        theme={theme}
                     />
                 )}
             </div>

@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { IconSpinner } from "@/components/ui/icons";
 import RunningComponent from "./running";
 import CyclingComponent from "./cycling";
 import SwimmingComponent from "./swimming";
@@ -67,6 +66,7 @@ export default function SidebarFormComponent({
             const validateElevationGain = isFinite(formData.elevationGain);
             const validateStrokes = isFinite(formData.strokes) && formData.strokes > 0;
 
+            // loose checks
             return (validateCadence || validateElevationGain || validateStrokes) 
                 && (formData.distance > 0 
                 && formData.duration > 0);
@@ -140,6 +140,7 @@ export default function SidebarFormComponent({
                             className="form__input form__input--type"
                             value={workoutType}
                             onChange={handleWorkoutTypeChange}
+                            disabled={isLoading}
                         >
                             <option value="running">Running</option>
                             <option value="cycling">Cycling</option>
@@ -207,9 +208,8 @@ export default function SidebarFormComponent({
                             disabled={isLoading}
                         />
                     </div>}
-                    <Button disabled={isLoading}>
-                        {isLoading && <IconSpinner className="mr-2 h-4 w-4 animate-spin" />}
-                        OK
+                    <Button disabled={isLoading} className="form__btn">
+                        {isLoading ? "..." : "ADD"}
                     </Button>
                 </form>)} 
             </>

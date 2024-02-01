@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChartProps } from '@/lib/types';
 
-const data = [
-  { name: 'Category A', value: 500 },
-  { name: 'Category B', value: 200 },
-];
-
-const BarChartComponent = () => {
+const BarChartComponent = ({ distanceCovered, target } : BarChartProps) => {
+  const data = [
+    { name: 'Distance Covered', value: distanceCovered },
+    { name: 'Target', value: target },
+  ];
   return (
     <BarChart width={250} height={370} data={data}>
       <CartesianGrid strokeDasharray="3 3" />

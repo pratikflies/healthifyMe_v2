@@ -44,6 +44,7 @@ export type mapProps = mapClickProps & {
         zoomLevel: number;
     };
     workouts: Workout[];
+    theme: boolean;
 };
 
 export type WorkoutComponentProps = {
@@ -102,4 +103,15 @@ export type ProfileDataType = {
     height: number;
     weight: number;
     target: number;
+}
+
+export type PieChartProps = {
+    runningCount: number;
+    cyclingCount: number;
+    swimmingCount: number;
+}
+
+export type BarChartProps = {
+    distanceCovered: number,
+    target: number,
 }

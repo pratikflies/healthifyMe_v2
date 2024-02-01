@@ -98,6 +98,7 @@ const Page = () => {
                         setIsFormVisible={setIsFormVisible}
                         setClickedCoords={setClickedCoords}
                         setSidebarBody={setSidebarBody}
+                        theme={true}
                     />
                 )}
             </div>

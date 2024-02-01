@@ -16,7 +16,12 @@ export default function CyclingComponent({ workout, isLoggedIn, setWorkouts, set
       
     }
 
-    const handleEdit = async (id: string) => {};
+    const handleEdit = async (id: string) => {
+      // setIsFormVisible(true);
+      // const workout = workouts.find(workout => workout.id == id);
+      // setWorkoutType(workout.type);
+      // setElevationGain(workout.elevationGain);
+    };
 
     const handleDelete = async (id: string) => {
       try {
