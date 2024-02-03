@@ -8,7 +8,7 @@ import SidebarHeaderComponent from "@/components/sidebar-header";
 import SidebarBodyComponent from "@/components/sidebar-body";
 import SidebarAuthComponent from "@/components/sidebar-auth";
 import SidebarFooterComponent from "@/components/sidebar-footer";
-import { LatLng, Workout, UserLocationType } from "@/lib/types";
+import { LatLng, Workout, UserLocationType, LatLngArr } from "@/lib/types";
 
 const DEFAULT_LAT = 22.6503867;
 const DEFAULT_LNG = 88.434807;
@@ -28,6 +28,10 @@ const Page = () => {
         lng: DEFAULT_LNG,
         zoomLevel: DEFAULT_ZOOM
     });
+    const [center, setCenter] = useState<LatLngArr>([
+        DEFAULT_LAT,
+        DEFAULT_LNG,
+    ]);
     const [isMapReady, setIsMapReady] = useState<boolean>(false);
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
     const [sidebarBody, setSidebarBody] = useState<string>("workouts");
@@ -45,6 +49,7 @@ const Page = () => {
             lng: position.coords.longitude,
             zoomLevel: DEFAULT_ZOOM
           });
+          setCenter([ position.coords.latitude, position.coords.longitude ]);
           setIsMapReady(true);
         }, (error) => {
           console.error("Error fetching user's location: ", error);
@@ -85,6 +90,7 @@ const Page = () => {
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}
                     isLoggedIn={false}
+                    setCenter={setCenter}
                 />)}
                 <SidebarFooterComponent />
             </div>
@@ -99,6 +105,7 @@ const Page = () => {
                         setClickedCoords={setClickedCoords}
                         setSidebarBody={setSidebarBody}
                         theme={true}
+                        center={center}
                     />
                 )}
             </div>

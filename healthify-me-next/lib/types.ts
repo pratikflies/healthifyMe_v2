@@ -27,6 +27,8 @@ export type LatLng = {
     lng: number;
 };
 
+export type LatLngArr = [number, number];
+
 export type UserLocationType = LatLng & {
     zoomLevel: number;
 };
@@ -45,6 +47,7 @@ export type mapProps = mapClickProps & {
     };
     workouts: Workout[];
     theme: boolean;
+    center: LatLngArr;
 };
 
 export type WorkoutComponentProps = {
@@ -52,6 +55,7 @@ export type WorkoutComponentProps = {
     isLoggedIn: boolean;
     setWorkouts: React.Dispatch<React.SetStateAction<Workout[]>>;
     setWorkoutComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
+    setCenter: React.Dispatch<React.SetStateAction<LatLngArr>>;
 }
 
 export type CyclingComponentProps = WorkoutComponentProps;
@@ -75,6 +79,7 @@ export type SidebarVisibilityProps = LoadingProps & {
     workoutComponents: JSX.Element[];
     setWorkoutComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
     isLoggedIn: boolean;
+    setCenter: React.Dispatch<React.SetStateAction<LatLngArr>>;
 };
 
 export type authDataType = {

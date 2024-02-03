@@ -76,10 +76,24 @@
     overflow-x: hidden;
     margin-bottom: 1rem;
     margin-top: 1rem;
+    scrollbar-width: thin; 
   }
   
   .workouts::-webkit-scrollbar {
-    width: 0;
+    width: 5px;
+  }
+  
+  .workouts::-webkit-scrollbar-track {
+    background: var(--color-dark--1);
+  }
+  
+  .workouts::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 100px;
+  }
+  
+  .workouts::-webkit-scrollbar-thumb:hover {
+    background: white;
   }
   
   .workout {
@@ -179,21 +193,22 @@
     padding-top: 1rem;
     overflow: hidden;
     transition: all 1s;
-    height: 4.2rem;
+    height: 6rem;
   }
   .zero__height {
     height: 0;
   }
   .sort__button {
-    background-color: var(--color-dark--1);
-    border: none;
+    background-color: var(--color-dark--2);
+    border: 1px inset black;
+    border-radius: 25px;
     padding: 0.5rem;
     color: var(--color-light--2);
     transition: all 0.5s;
   }
   .sort__button:hover {
     cursor: pointer;
-    transform: translateY(-8px) scale(1.2);
+    transform: translateY(-8px) scale(1.1);
   }
   .arrow {
     font-size: 1.5rem;
@@ -221,6 +236,12 @@
   
     height: 11rem;
     transition: all 0.5s, transform 1ms;
+  }
+
+  .close-button {
+    margin-left: 95%;
+    margin-bottom: 0.3rem;
+    cursor: pointer;
   }
   
   .form.hidden {
@@ -275,7 +296,8 @@
     width: 8rem;
     height: 2rem;
     transition: all 0.5s;
-    margin-left: 46%;
+    margin-left: 36%;
+    padding-left: 5.1rem;
     cursor: pointer;
   }
   
