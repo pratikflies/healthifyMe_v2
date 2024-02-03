@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,8 @@ export default function SidebarFormComponent({
     clickedCoords,
     setWorkouts,
     setWorkoutComponents,
-    isLoggedIn }: SidebarVisibilityProps) {
+    isLoggedIn,
+    setCenter }: SidebarVisibilityProps) {
         // none of the below states save
         const [workoutType, setWorkoutType] = useState<string>("running");
         const [distance, setDistance] = useState<string>("");
@@ -26,7 +28,7 @@ export default function SidebarFormComponent({
         const [cadence, setCadence] = useState<string>("");
         const [elevationGain, setElevationGain] = useState<string>("");
         const [strokes, setStrokes] = useState<string>("");
-        const [date, setDate] = useState<string>("");
+        const [date, setDate] = useState(getFormattedCurrentDateTime());
 
         const renderWorkout = (workout: Workout) => {
             if (workout.type === "running") {
@@ -35,6 +37,7 @@ export default function SidebarFormComponent({
                     isLoggedIn={isLoggedIn}
                     setWorkouts = {setWorkouts}
                     setWorkoutComponents = {setWorkoutComponents}
+                    setCenter = {setCenter}
                 />
             }
             if (workout.type === "cycling") {
@@ -43,6 +46,7 @@ export default function SidebarFormComponent({
                     isLoggedIn={isLoggedIn}
                     setWorkouts = {setWorkouts}
                     setWorkoutComponents = {setWorkoutComponents}
+                    setCenter = {setCenter}
                 />
             }
             if (workout.type === "swimming") {
@@ -51,6 +55,7 @@ export default function SidebarFormComponent({
                     isLoggedIn={isLoggedIn}
                     setWorkouts = {setWorkouts}
                     setWorkoutComponents = {setWorkoutComponents}
+                    setCenter = {setCenter}
                 />
             }
             return <></>;
@@ -59,18 +64,32 @@ export default function SidebarFormComponent({
         const handleWorkoutTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
             setWorkoutType(e.target.value);
         };
+        
+        const handleClose = () => {
+            setIsFormVisible(false);
+        }
 
-        const validation = (formData: any) => {
-            // setting any data type because: NaN of one/multiple fields is a possibilty
-            const validateCadence = isFinite(formData.cadence) && formData.cadence > 0;
-            const validateElevationGain = isFinite(formData.elevationGain);
-            const validateStrokes = isFinite(formData.strokes) && formData.strokes > 0;
+        function getFormattedCurrentDateTime() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + 5);
+        
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); 
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }       
 
-            // loose checks
-            return (validateCadence || validateElevationGain || validateStrokes) 
-                && (formData.distance > 0 
-                && formData.duration > 0);
-        };
+        const validation = (formData: any) => (
+            formData.distance > 0 &&
+            formData.duration > 0 &&
+            (!isLoggedIn || new Date(formData.dateObject) >= new Date()) &&
+            (formData.type === "running" ? isFinite(formData.cadence) && formData.cadence > 0 :
+             formData.type === "cycling" ? isFinite(formData.elevationGain) :
+             formData.type === "swimming" ? isFinite(formData.strokes) && formData.strokes > 0 : true)
+        );        
 
         async function onSubmit(event: React.SyntheticEvent) {
             event.preventDefault();
@@ -133,6 +152,15 @@ export default function SidebarFormComponent({
 
         return (
             <>
+                {isFormVisible && 
+                    (<Image
+                        src="/close.png" 
+                        alt="Close" 
+                        width={20} 
+                        height={20} 
+                        className = "close-button"
+                        onClick={handleClose}
+                    />)}
                 {isFormVisible && (<form className="form" onSubmit={onSubmit}>
                     <div className="form__row">
                         <Label className="form__label">Type</Label>
@@ -155,6 +183,7 @@ export default function SidebarFormComponent({
                             required
                             onChange={e => setDistance(e.target.value)}
                             disabled={isLoading}
+                            autoFocus
                         />
                     </div>
                     <div className="form__row">
@@ -204,6 +233,7 @@ export default function SidebarFormComponent({
                             type="datetime-local" 
                             id="datetime-input"
                             className="form__input"
+                            value={date} 
                             onChange={e => setDate(e.target.value)}
                             disabled={isLoading}
                         />

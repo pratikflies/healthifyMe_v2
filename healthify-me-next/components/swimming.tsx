@@ -3,10 +3,12 @@
 import React from "react";
 import Image from "next/image";
 import axiosInstance from "@/lib/axiosInstance";
-import { SwimmingComponentProps } from "@/lib/types";
+import { SwimmingComponentProps, LatLng } from "@/lib/types";
 
-export default function SwimmingComponent({ workout, isLoggedIn, setWorkouts, setWorkoutComponents }: SwimmingComponentProps) {
-  let icon, locality = "Dum Dum", temperature = "26";
+export default function SwimmingComponent({ workout, isLoggedIn, setWorkouts, setWorkoutComponents, setCenter }: SwimmingComponentProps) {
+  let icon, locality = "Pune", temperature = "21";
+  // we can use external API's to determine locality and temperature
+
   if (isLoggedIn) {
     icon = workout.type === "running"
         ? "🏃"
@@ -16,6 +18,10 @@ export default function SwimmingComponent({ workout, isLoggedIn, setWorkouts, se
     
   }
   const handleEdit = async (id: string) => {};
+
+  const handleView = async({ lat, lng }: LatLng) => {
+    setCenter([lat, lng]);
+  }
 
   const handleDelete = async (id: string) => {
     try {
@@ -31,7 +37,7 @@ export default function SwimmingComponent({ workout, isLoggedIn, setWorkouts, se
   };
 
   return isLoggedIn ? (
-      <li className={`workout workout--${workout.type}`} data-id={workout.id}>
+      <li className={`workout workout--${workout.type}`} data-id={workout.id} onClick={() => handleView(workout.coords)}>
         <h2 className="workout__title">{
           workout.description + ', ' + locality
         }</h2>
@@ -82,7 +88,7 @@ export default function SwimmingComponent({ workout, isLoggedIn, setWorkouts, se
         </div>
       </li>
     ) : (
-      <li className={`workout workout--${workout.type}`} data-id={workout.id}>
+      <li className={`workout workout--${workout.type}`} data-id={workout.id} onClick={() => handleView(workout.coords)}>
         <h2 className="workout__title">{workout.description}</h2>
         <div className="workout__details">
           <span className="workout__icon">

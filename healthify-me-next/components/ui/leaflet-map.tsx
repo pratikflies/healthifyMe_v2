@@ -1,12 +1,21 @@
 "use client"
 
-import React from "react";
-import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from "react-leaflet";
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, useMapEvents, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { mapProps, mapClickProps } from "@/lib/types";
 import { userIcon, runningIcon, cyclingIcon, swimmingIcon } from "@/components/ui/leaflet-icons";
+
+const ChangeView = ({ center, zoom }: any) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(center, zoom, { duration: 1 });
+  }, [center, zoom, map]);
+
+  return null; 
+};
 
 const MapClickHandler = ({ setIsFormVisible, setClickedCoords, setSidebarBody }: mapClickProps) => {
   useMapEvents({
@@ -23,10 +32,11 @@ const MapClickHandler = ({ setIsFormVisible, setClickedCoords, setSidebarBody }:
   // this component does not render anything
 };
 
-export default function LeafletMap({ userLocation, workouts, setIsFormVisible, setClickedCoords, setSidebarBody, theme }: mapProps) {
+export default function LeafletMap({ userLocation, workouts, setIsFormVisible, setClickedCoords, setSidebarBody, theme, center }: mapProps) {
   const { lat, lng, zoomLevel } = userLocation;
   return (
     <MapContainer style={{ height: "100%", width: "100%" }} center={[lat, lng]} zoom={zoomLevel} scrollWheelZoom={false}>
+      <ChangeView center={center} zoom={zoomLevel} />
       {!theme && (<TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"

@@ -2,11 +2,13 @@
 
 import React from "react";
 import Image from "next/image";
-import { CyclingComponentProps } from "@/lib/types";
+import { CyclingComponentProps, LatLng } from "@/lib/types";
 import axiosInstance from "@/lib/axiosInstance";
 
-export default function CyclingComponent({ workout, isLoggedIn, setWorkouts, setWorkoutComponents }: CyclingComponentProps) {
-    let icon, locality = "Dum Dum", temperature = "26";
+export default function CyclingComponent({ workout, isLoggedIn, setWorkouts, setWorkoutComponents, setCenter }: CyclingComponentProps) {
+    let icon, locality = "New Delhi", temperature = "14";
+    // we can use external API's to determine locality and temperature
+
     if (isLoggedIn) {
       icon = workout.type === "running"
           ? "🏃"
@@ -16,12 +18,11 @@ export default function CyclingComponent({ workout, isLoggedIn, setWorkouts, set
       
     }
 
-    const handleEdit = async (id: string) => {
-      // setIsFormVisible(true);
-      // const workout = workouts.find(workout => workout.id == id);
-      // setWorkoutType(workout.type);
-      // setElevationGain(workout.elevationGain);
-    };
+    const handleEdit = async (id: string) => {};
+
+    const handleView = async({ lat, lng }: LatLng) => {
+      setCenter([lat, lng]);
+    }
 
     const handleDelete = async (id: string) => {
       try {
@@ -37,7 +38,7 @@ export default function CyclingComponent({ workout, isLoggedIn, setWorkouts, set
     };
 
     return isLoggedIn ? (
-        <li className={`workout workout--${workout.type}`} data-id={workout.id}>
+        <li className={`workout workout--${workout.type}`} data-id={workout.id} onClick={() => handleView(workout.coords)}>
           <h2 className="workout__title">{
             workout.description + ', ' + locality
           }</h2>
@@ -88,7 +89,7 @@ export default function CyclingComponent({ workout, isLoggedIn, setWorkouts, set
           </div>
         </li>
     ) : (
-      <li className={`workout workout--${workout.type}`} data-id={workout.id}>
+      <li className={`workout workout--${workout.type}`} data-id={workout.id} onClick={() => handleView(workout.coords)}>
         <h2 className="workout__title">{workout.description}</h2>
         <div className="workout__details">
           <span className="workout__icon">

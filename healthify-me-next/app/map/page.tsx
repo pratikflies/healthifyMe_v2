@@ -8,7 +8,7 @@ import RunningComponent from "@/components/running";
 import CyclingComponent from "@/components/cycling";
 import SwimmingComponent from "@/components/swimming";
 import SidebarFooterComponent from "@/components/sidebar-footer";
-import { LatLng, Workout, UserLocationType } from "@/lib/types";
+import { LatLng, Workout, UserLocationType, LatLngArr } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/lib/axiosInstance";
@@ -34,6 +34,10 @@ const Page = () => {
         lng: DEFAULT_LNG,
         zoomLevel: DEFAULT_ZOOM
     });
+    const [center, setCenter] = useState<LatLngArr>([
+        DEFAULT_LAT,
+        DEFAULT_LNG,
+    ]);
     const [isMapReady, setIsMapReady] = useState<boolean>(false);
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
     const [sidebarBody, setSidebarBody] = useState<string>("workouts");
@@ -57,6 +61,7 @@ const Page = () => {
                 isLoggedIn={true} 
                 setWorkouts = {setWorkouts}
                 setWorkoutComponents = {setWorkoutComponents}
+                setCenter = {setCenter}
             />
         if (workout.type === "cycling") 
             return <CyclingComponent 
@@ -64,6 +69,7 @@ const Page = () => {
                 isLoggedIn={true} 
                 setWorkouts = {setWorkouts}
                 setWorkoutComponents = {setWorkoutComponents}
+                setCenter = {setCenter}
             />
         if (workout.type === "swimming") 
             return <SwimmingComponent 
@@ -71,6 +77,7 @@ const Page = () => {
                 isLoggedIn={true} 
                 setWorkouts = {setWorkouts}
                 setWorkoutComponents = {setWorkoutComponents}
+                setCenter = {setCenter}
             />
         return <></>;
     };
@@ -105,6 +112,10 @@ const Page = () => {
             lng: position.coords.longitude,
             zoomLevel: DEFAULT_ZOOM
           });
+          setCenter([
+            position.coords.latitude,
+            position.coords.longitude,
+          ]);
           setIsMapReady(true);
         }, (error) => {
           console.error("Error fetching user's location: ", error);
@@ -112,16 +123,30 @@ const Page = () => {
         });
     }, []);
 
-    // const [unfilteredWorkouts, setUnfilteredWorkouts] = useState<Workout[]>([]);
-    // const [unfilteredWorkoutComponents, setUnfilteredWorkoutComponents] = useState<JSX.Element[]>([]);
-    const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleFilterTypeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedFilterType = e.target.value;
         setFilterType(selectedFilterType);
-    
-        const filteredWorkouts = workouts.filter(workout => workout.type === selectedFilterType);
-        const filteredWorkoutComponents = workoutComponents.filter(workoutComponent => workoutComponent.props.workout.type === selectedFilterType);
-        setWorkouts([...filteredWorkouts]);
-        setWorkoutComponents([...filteredWorkoutComponents]);
+
+        try {
+            const storedWorkoutsResponse = await axiosInstance.post("http://localhost:3001/fetch");
+
+            if (storedWorkoutsResponse.status === 200) {
+                const filteredWorkoutsArray = [];
+                const filteredWorkoutsComponentsArray = [];
+                
+                for (const workout of storedWorkoutsResponse.data) {
+                    if (workout.type === selectedFilterType || selectedFilterType === "showAll") {
+                        filteredWorkoutsArray.push(workout);
+                        filteredWorkoutsComponentsArray.push(renderWorkout(workout));
+                    }
+                }
+                
+                setWorkouts([...filteredWorkoutsArray]);
+                setWorkoutComponents([ ...filteredWorkoutsComponentsArray]);
+            } else throw new Error("Bad network response!");
+        } catch (error) {
+          console.error("Error filtering workouts:", error);
+        }
     };
     
     const handleShowSortButtons = () => {
@@ -210,6 +235,7 @@ const Page = () => {
                     workoutComponents={workoutComponents}
                     setWorkoutComponents={setWorkoutComponents}
                     isLoggedIn={true}
+                    setCenter={setCenter}
                 />
                 <div className="controls">
                     <Button disabled={isLoading} className="show__sort__btns" onClick={handleShowSortButtons}>
@@ -243,6 +269,7 @@ const Page = () => {
                         setClickedCoords={setClickedCoords}
                         setSidebarBody={setSidebarBody}
                         theme={theme}
+                        center={center}
                     />
                 )}
             </div>

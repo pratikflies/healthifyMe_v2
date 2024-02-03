@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ProfileDataType } from "@/lib/types";
 import { useRouter } from "next/router";
 import axiosInstance from "@/lib/axiosInstance";
+import Cookies from "js-cookie";
 import "../dashboard/dashboard.css";
 
 export async function getProps() {
@@ -110,11 +111,13 @@ export default function Profile() {
     setIsLoading(true);
 
     try {
-        const response : any = await axiosInstance.post("http://localhost:3001/deleteProfile");
+        const response : any = await axiosInstance.post("http://localhost:3001/delete-profile");
 
         if (response.status === 200) {
             // do stuff
             // router.push("/");
+            const token = Cookies.get("token");
+            Cookies.remove("token");
             window.location.href = "/";
         } else throw new Error("Bad network response!");
     } catch (error) {
