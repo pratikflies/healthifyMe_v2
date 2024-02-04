@@ -199,96 +199,91 @@ exports.postLogout = async (req, res) => {
 };
 
 exports.resetUser = (req, res) => {
-  Workout.deleteMany({ userId: req.user._id })
+  Workout.deleteMany({ userId: req.userId })
     .then((result) => {
       console.log(`${result.deletedCount} documents deleted!`);
       return res.status(200).send("User Reset Sucessfully!");
     })
     .catch((error) => {
       console.error("Error deleting documents:", error);
+      res.status(500).json({ message: error.message });
     });
 };
 
-exports.deleteProfile = (req, res, next) => {
-  User.deleteOne({ _id: req.user._id })
-    .then((result) => {
-      Workout.deleteMany({ userdId: req.user._id })
-        .then((result) => {
-          console.log("Account deleted successfully!");
-          return res.redirect("/login");
-        })
-        .catch((error) => {
-          console.log("Error deleting documents:", error);
-        });
+exports.deleteProfile = (req, res) => {
+  User.deleteOne({ _id: req.userId })
+    .then((_result) => {
+      return res.status(200).send("User Deleted Sucessfully!");
     })
     .catch((error) => {
-      console.log("Error deleting user:", error);
+      console.error(`Error deleting user: ${req.userId}`, error);
+      res.status(500).json({ message: error.message });
     });
 };
 
-exports.getGallery = (req, res, next) => {
-  Image.find()
-    .then((images) => {
-      res.render("gallery/gallery", {
-        images: images,
-        story: "",
-        errorMessage: "",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+// exports.getGallery = (req, res, next) => {
+//   Image.find()
+//     .then((images) => {
+//       res.render("gallery/gallery", {
+//         images: images,
+//         story: "",
+//         errorMessage: "",
+//       });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
 
-exports.addImage = (req, res, next) => {
-  const image = req.file;
-  const story = req.body.story;
+// exports.addImage = (req, res, next) => {
+//   const image = req.file;
+//   const story = req.body.story;
 
-  if (!image) {
-    return Image.find()
-      .then((images) => {
-        return res.status(422).render("gallery/gallery", {
-          images: images,
-          story: story,
-          errorMessage: "Attached file is not an image",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+//   if (!image) {
+//     return Image.find()
+//       .then((images) => {
+//         return res.status(422).render("gallery/gallery", {
+//           images: images,
+//           story: story,
+//           errorMessage: "Attached file is not an image",
+//         });
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
 
-  const imageUrl = image.path;
+//   const imageUrl = image.path;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors);
-    return Image.find()
-      .then((images) => {
-        return res.status(422).render("gallery/gallery", {
-          images: images,
-          story: story,
-          errorMessage:
-            "Story must not be less than 5 characters or more than 100 characters!",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     console.log(errors);
+//     return Image.find()
+//       .then((images) => {
+//         return res.status(422).render("gallery/gallery", {
+//           images: images,
+//           story: story,
+//           errorMessage:
+//             "Story must not be less than 5 characters or more than 100 characters!",
+//         });
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
 
-  const img = new Image({
-    imageUrl: imageUrl,
-    story: story,
-    userId: req.user._id,
-  });
-  img
-    .save()
-    .then((result) => {
-      console.log("Story added!");
-      res.redirect("/admin/gallery");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+//   const img = new Image({
+//     imageUrl: imageUrl,
+//     story: story,
+//     userId: req.user._id,
+//   });
+//   img
+//     .save()
+//     .then((result) => {
+//       console.log("Story added!");
+//       res.redirect("/admin/gallery");
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
