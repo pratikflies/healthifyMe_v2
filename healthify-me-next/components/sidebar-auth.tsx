@@ -10,7 +10,6 @@ import { authDataType } from "@/lib/types";
 import { SidebarBodyType } from "@/lib/types";
 
 export default function SidebarAuthComponent({ isLoading, setIsLoading, sidebarBody, setSidebarBody }: SidebarBodyType) {
-    // none of the below states save
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(false);

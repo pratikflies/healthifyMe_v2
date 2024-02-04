@@ -3,13 +3,35 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const TokenLog = require("../models/tokenLog");
 const jwt = require("jsonwebtoken");
-// const nodemailer = require("nodemailer");
+require('dotenv').config();
 const { WorkoutFactory } = require("../data-engine/workoutFactory");
+// const nodemailer = require("nodemailer");
 
 const validateEmail = (email) => {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^,;:\s@"]+\.)+[^,;:\s@"]{2,})$/i;
   return re.test(String(email).toLowerCase());
 };
+
+const createAuthToken = function (user) {
+  const token = jwt.sign(
+    { email: user.email, id: user.id },
+    process.env.ACCESS_SECRET,
+    {
+      expiresIn: "7d",
+    },
+  );
+  return token;
+};
+
+// // directly using nodemailer to send mails
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "pratik16082001@gmail.com",
+//     //password generated via google's two-step authentication;
+//     pass: "yefdcajaopkerldp",
+//   },
+// });
 
 exports.addWorkout = (req, res) => {
   const {type, coords, distance, duration, cadence, elevationGain, strokes, dateObject} = req.body;
@@ -28,33 +50,12 @@ exports.addWorkout = (req, res) => {
       }
     );
 
-    res.status(201).json(workout);
+    return res.status(201).json(workout);
   }
   catch (error) {
     console.error(`Error adding workout of type: ${type}`, error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
-};
-
-// // directly using nodemailer to send mails
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: "pratik16082001@gmail.com",
-//     //password generated via google's two-step authentication;
-//     pass: "yefdcajaopkerldp",
-//   },
-// });
-
-const createAuthToken = function (user) {
-  const token = jwt.sign(
-    { email: user.email, id: user.id },
-    process.env.ACCESS_SECRET,
-    {
-      expiresIn: "7d",
-    },
-  );
-  return token;
 };
 
 exports.postLogin = async (req, res) => {
@@ -134,8 +135,10 @@ exports.postSignup = async (req, res) => {
       status: "active",
     });
 
-    // send activation e-mail
-    const activationUrl = `${process.env.LOCAL_URL}/activate-account/${email}|${token}`;
+    if (process.env.ENV !== "dev") {
+      // send activation e-mail
+      // const activationUrl = `${process.env.LOCALHOST}/activate-account/${email}|${token}`;
+    }
 
     return res.status(200).json({ success: true });
   } catch (error) {

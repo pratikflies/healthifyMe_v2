@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React from "react";
 import SidebarFormComponent from "./sidebar-form";
 import SidebarWorkoutsComponent from "./sidebar-workouts";
 import { SidebarVisibilityProps } from "@/lib/types";

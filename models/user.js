@@ -18,7 +18,7 @@ const userSchema = new Schema({
   meta: {
     type: Object,
     default: {}, 
-    // Contains user details: full name, gender, age, height, weight, goal
+    // Contains user details: fistname, lastname, gender, age, height, weight, target
   },
   created: {
     type: Date, 

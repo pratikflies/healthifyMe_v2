@@ -1,13 +1,23 @@
-const mongoose = require("mongoose");
 const Workout = require("../models/workout");
 const User = require("../models/user");
-const Image = require("../models/image");
 const tokenLog = require("../models/tokenLog");
-const fileHelper = require("../util/file");
-const { validationResult } = require("express-validator");
 const { WorkoutFactory } = require("../data-engine/workoutFactory");
+//const Image = require("../models/image");
+//const fileHelper = require("../util/file");
 
 function square(num) { return num * num; }
+
+function generateRecommendation(runningCount, swimmingCount, cyclingCount) {
+  let maxi = Math.max(runningCount, swimmingCount, cyclingCount);
+  if (runningCount * 2 < maxi)
+    return "🏃 to have a balanced workout schedule.";
+  else if (swimmingCount * 2 < maxi)
+    return "🏊‍♀️ to have a balanced workout schedule.";
+  else if (cyclingCount * 2 < maxi)
+    return "🚴‍♂️ to have a balanced workout schedule.";
+  return "Perfectly balanced! 🤹";
+};
+
 exports.getUserProfile = async (req, res) => {
   try {
     const profile = (await User.findOne({ _id: req.userId }))?.meta;
@@ -57,22 +67,11 @@ exports.postUserProfile = async (req, res) => {
     }
     await user.save();
 
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (error) {
     console.error(`Error finding and updating profile for user: ${req.userId}, `, error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }  
-};
-
-function generateRecommendation(runningCount, swimmingCount, cyclingCount) {
-  let maxi = Math.max(runningCount, swimmingCount, cyclingCount);
-  if (runningCount * 2 < maxi)
-    return "🏃 to have a balanced workout schedule.";
-  else if (swimmingCount * 2 < maxi)
-    return "🏊‍♀️ to have a balanced workout schedule.";
-  else if (cyclingCount * 2 < maxi)
-    return "🚴‍♂️ to have a balanced workout schedule.";
-  return "Perfectly balanced! 🤹";
 };
 
 exports.getDashboard = async (req, res) => {
@@ -112,6 +111,7 @@ exports.getDashboard = async (req, res) => {
     const runningCount = upcomingRunningCount + completedRunningCount;
     const cyclingCount = upcomingCyclingCount + completedCyclingCount;
     const swimmingCount = upcomingSwimmingCount + completedSwimmingCount;
+    // Integrate an LLM here?
     const recommendation = generateRecommendation(runningCount, swimmingCount, cyclingCount);
       
     return res.status(200).json({
@@ -139,7 +139,7 @@ exports.fetchWorkout = async (req, res) => {
     const upcomingWorkoutsArray = workouts.filter((workout) => {
       return workout.date > currentDate;
     });
-    res.status(200).json(upcomingWorkoutsArray);
+    return res.status(200).json(upcomingWorkoutsArray);
   } catch (error) {
     console.error(`Error while fetching workouts for user: ${req.userId}, `, error);
     return res.status(500).json({ message: error.message });
@@ -168,11 +168,11 @@ exports.saveWorkout = async (req, res) => {
       userId: req.userId,
       workout,
     });
-    res.status(201).json({ success: true });
+    return res.status(201).json({ success: true });
   }
   catch (error) {
     console.error(`Error adding workout of type: ${type} for user: ${req.userId}, `, error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -180,10 +180,10 @@ exports.deleteWorkout = async (req, res) => {
   const workoutId = req.body.id;
   try {
     const result = await Workout.deleteOne({ "workout.id": workoutId });
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (error) {
     console.error(`Error deleting workout with id: ${workoutId} for user: ${req.userId}!`, error.message);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -191,10 +191,10 @@ exports.postLogout = async (req, res) => {
   try {
     const result = await tokenLog.deleteOne({ token: req.body.token });
     console.log(`Logged out user: ${req.userId}.`);
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (error) {
     console.error(`Error logging out user: ${req.userId}!`);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -206,7 +206,7 @@ exports.resetUser = (req, res) => {
     })
     .catch((error) => {
       console.error("Error deleting documents:", error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     });
 };
 
@@ -217,7 +217,7 @@ exports.deleteProfile = (req, res) => {
     })
     .catch((error) => {
       console.error(`Error deleting user: ${req.userId}`, error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     });
 };
 

@@ -21,8 +21,12 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ children, heading, 
               <button
                 key={index}
                 className="py-2 px-4 mb-4 rounded-md"
-                style={{ borderColor: '#ffb545', borderWidth: '0.5px' }}
+                style={{ 
+                    borderColor: (heading.charAt(0).toLowerCase() + heading.slice(1) === item.route) ? "initial" : "#ffb545",
+                    borderWidth: (heading.charAt(0).toLowerCase() + heading.slice(1) === item.route) ? "2px" : "0.5px",
+                }}
                 onClick={() => onClick(item.route)}
+                disabled={heading.charAt(0).toLowerCase() + heading.slice(1) === item.route}
               >
                 {item.title}
               </button>

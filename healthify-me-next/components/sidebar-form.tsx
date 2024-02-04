@@ -21,7 +21,6 @@ export default function SidebarFormComponent({
     setWorkoutComponents,
     isLoggedIn,
     setCenter }: SidebarVisibilityProps) {
-        // none of the below states save
         const [workoutType, setWorkoutType] = useState<string>("running");
         const [distance, setDistance] = useState<string>("");
         const [duration, setDuration] = useState<string>("");
@@ -89,7 +88,7 @@ export default function SidebarFormComponent({
             (formData.type === "running" ? isFinite(formData.cadence) && formData.cadence > 0 :
              formData.type === "cycling" ? isFinite(formData.elevationGain) :
              formData.type === "swimming" ? isFinite(formData.strokes) && formData.strokes > 0 : true)
-        );        
+        );       
 
         async function onSubmit(event: React.SyntheticEvent) {
             event.preventDefault();
