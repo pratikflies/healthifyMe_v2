@@ -33,7 +33,11 @@ class Workout {
         months[this.date.getMonth()]
       } ${this.date.getDate()}`;
 
-      if (this.isDateObject) this.description += `, ${this.date.getHours() + ':' + this.date.getMinutes()}`;
+      if (this.isDateObject) {
+        const hours = String(this.date.getHours()).padStart(2, '0');
+        const minutes = String(this.date.getMinutes()).padStart(2, '0');
+        this.description += `, ${hours}:${minutes}`;
+      }
     }
   
     click() {

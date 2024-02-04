@@ -3,9 +3,13 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const TokenLog = require("../models/tokenLog");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const { validationResult } = require("express-validator");
+// const nodemailer = require("nodemailer");
 const { WorkoutFactory } = require("../data-engine/workoutFactory");
+
+const validateEmail = (email) => {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^,;:\s@"]+\.)+[^,;:\s@"]{2,})$/i;
+  return re.test(String(email).toLowerCase());
+};
 
 exports.addWorkout = (req, res) => {
   const {type, coords, distance, duration, cadence, elevationGain, strokes, dateObject} = req.body;
@@ -32,46 +36,15 @@ exports.addWorkout = (req, res) => {
   }
 };
 
-//directly using nodemailer to send mails;
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "pratik16082001@gmail.com",
-    //password generated via google's two-step authentication;
-    pass: "yefdcajaopkerldp",
-  },
-});
-
-exports.getHomepage = (req, res, next) => {
-  return res.render("home/homepage");
-};
-
-exports.getLogin = (req, res, next) => {
-  let message = req.flash("error");
-  if (message.length > 0) message = message[0];
-  else message = null;
-  return res.render("authentication/loginForm", {
-    errorMessage: message,
-    oldInput: {
-      email: "",
-      password: "",
-    },
-  });
-};
-
-exports.getSignup = (req, res, next) => {
-  let message = req.flash("error");
-  if (message.length > 0) message = message[0];
-  else message = null;
-  return res.render("authentication/signupForm", {
-    errorMessage: message,
-    oldInput: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-};
+// // directly using nodemailer to send mails
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "pratik16082001@gmail.com",
+//     //password generated via google's two-step authentication;
+//     pass: "yefdcajaopkerldp",
+//   },
+// });
 
 const createAuthToken = function (user) {
   const token = jwt.sign(
@@ -131,6 +104,16 @@ exports.postLogin = async (req, res) => {
 
 exports.postSignup = async (req, res) => {
   const { email, password } = req.body;
+
+   // basic email and password validation
+  if (!validateEmail(email)) {
+    return res.status(400).json({ message: "Invalid email format." });
+  }
+
+  if (password.length < 8) {
+    return res.status(400).json({ message: "Password must be at least 8 characters long." });
+  }
+
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) throw new Error("User already exists!");
@@ -161,135 +144,131 @@ exports.postSignup = async (req, res) => {
   }
 };
 
-exports.getReset = (req, res, next) => {
-  let message = req.flash("error");
-  if (message.length > 0) message = message[0];
-  else message = null;
-  return res.render("authentication/resetForm", {
-    errorMessage: message,
-    oldInput: {
-      email: "",
-    },
-  });
-};
+// exports.getReset = (req, res, next) => {
+//   let message = req.flash("error");
+//   if (message.length > 0) message = message[0];
+//   else message = null;
+//   return res.render("authentication/resetForm", {
+//     errorMessage: message,
+//     oldInput: {
+//       email: "",
+//     },
+//   });
+// };
 
-exports.postReset = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors);
-    return res.status(422).render("authentication/resetForm", {
-      errorMessage: errors.array()[0].msg,
-      oldInput: {
-        email: req.body.email,
-      },
-    });
-  }
-  crypto.randomBytes(32, (err, buffer) => {
-    if (err) {
-      console.log(err);
-      return res.redirect("/reset");
-    }
-    const token = buffer.toString("hex");
-    User.findOne({ email: req.body.email })
-      .then((user) => {
-        if (!user) {
-          req.flash("error", "No account with that email found.");
-          return res.redirect("/reset");
-        }
-        user.resetToken = token;
-        user.resetTokenExpiration = Date.now() + 3600000;
-        return user
-          .save()
-          .then((result) => {
-            res.redirect("/login");
-            transporter.sendMail({
-              to: req.body.email,
-              from: "pratik16082001@gmail.com",
-              subject: "Password Reset!",
-              html: `
-            <p>You requested for a password reset on your HealthifyMe account.</p>
-            <p>Click this <a href="http://localhost:4000/reset/${token}">link</a> to set a new password.</p>`,
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-};
+// exports.postReset = (req, res, next) => {
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     console.log(errors);
+//     return res.status(422).render("authentication/resetForm", {
+//       errorMessage: errors.array()[0].msg,
+//       oldInput: {
+//         email: req.body.email,
+//       },
+//     });
+//   }
+//   crypto.randomBytes(32, (err, buffer) => {
+//     if (err) {
+//       console.log(err);
+//       return res.redirect("/reset");
+//     }
+//     const token = buffer.toString("hex");
+//     User.findOne({ email: req.body.email })
+//       .then((user) => {
+//         if (!user) {
+//           req.flash("error", "No account with that email found.");
+//           return res.redirect("/reset");
+//         }
+//         user.resetToken = token;
+//         user.resetTokenExpiration = Date.now() + 3600000;
+//         return user
+//           .save()
+//           .then((result) => {
+//             res.redirect("/login");
+//             transporter.sendMail({
+//               to: req.body.email,
+//               from: "pratik16082001@gmail.com",
+//               subject: "Password Reset!",
+//               html: `
+//             <p>You requested for a password reset on your HealthifyMe account.</p>
+//             <p>Click this <a href="http://localhost:4000/reset/${token}">link</a> to set a new password.</p>`,
+//             });
+//           })
+//           .catch((err) => {
+//             console.log(err);
+//           });
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   });
+// };
 
-exports.getNewPassword = (req, res, next) => {
-  const token = req.params.token;
-  User.findOne({
-    resetToken: token,
-    resetTokenExpiration: {
-      $gt: Date.now(),
-      //gt->greater than
-    },
-  })
-    .then((user) => {
-      let message = req.flash("error");
-      if (message.length > 0) message = message[0];
-      else message = null;
-      res.render("authentication/newpasswordForm", {
-        passwordToken: token,
-        userId: user._id.toString(),
-        errorMessage: message,
-        oldInput: {
-          password: "",
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+// exports.getNewPassword = (req, res, next) => {
+//   const token = req.params.token;
+//   User.findOne({
+//     resetToken: token,
+//     resetTokenExpiration: {
+//       $gt: Date.now(),
+//       //gt->greater than
+//     },
+//   })
+//     .then((user) => {
+//       let message = req.flash("error");
+//       if (message.length > 0) message = message[0];
+//       else message = null;
+//       res.render("authentication/newpasswordForm", {
+//         passwordToken: token,
+//         userId: user._id.toString(),
+//         errorMessage: message,
+//         oldInput: {
+//           password: "",
+//         },
+//       });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
 
-exports.postNewPassword = (req, res, next) => {
-  const newPassword = req.body.password;
-  const userId = req.body.userId;
-  const passwordToken = req.body.passwordToken;
+// exports.postNewPassword = (req, res, next) => {
+//   const newPassword = req.body.password;
+//   const userId = req.body.userId;
+//   const passwordToken = req.body.passwordToken;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors);
-    return res.status(422).render("authentication/newpasswordForm", {
-      errorMessage: errors.array()[0].msg,
-      passwordToken: passwordToken,
-      userId: userId,
-      oldInput: {
-        password: newPassword,
-      },
-    });
-  }
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     console.log(errors);
+//     return res.status(422).render("authentication/newpasswordForm", {
+//       errorMessage: errors.array()[0].msg,
+//       passwordToken: passwordToken,
+//       userId: userId,
+//       oldInput: {
+//         password: newPassword,
+//       },
+//     });
+//   }
 
-  let resetUser;
-  User.findOne({
-    resetToken: passwordToken,
-    resetTokenExpiration: { $gt: Date.now() },
-    _id: userId,
-  })
-    .then((user) => {
-      resetUser = user;
-      return bcrypt.hash(newPassword, 12);
-    })
-    .then((hashedPassword) => {
-      resetUser.password = hashedPassword;
-      resetUser.resetToken = undefined;
-      resetUser.resetTokenExpiration = undefined;
-      return resetUser.save();
-    })
-    .then((result) => {
-      res.redirect("/login");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-exports.getContact = (req, res, next) => {
-  return res.render("home/contactUs.ejs");
-};
+//   let resetUser;
+//   User.findOne({
+//     resetToken: passwordToken,
+//     resetTokenExpiration: { $gt: Date.now() },
+//     _id: userId,
+//   })
+//     .then((user) => {
+//       resetUser = user;
+//       return bcrypt.hash(newPassword, 12);
+//     })
+//     .then((hashedPassword) => {
+//       resetUser.password = hashedPassword;
+//       resetUser.resetToken = undefined;
+//       resetUser.resetTokenExpiration = undefined;
+//       return resetUser.save();
+//     })
+//     .then((result) => {
+//       res.redirect("/login");
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
