@@ -2,7 +2,28 @@
 
 Get Started
 
-...
+Welcome to Healthify-Me! This guide will walk you through the steps to get the project up and running on your local machine for development and testing purposes.
+
+## Prerequisites
+
+Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on your system. This project uses `npm` for managing dependencies.
+
+## Installation
+
+1. Start by cloning the repository to your local machine:
+     1. git clone https://github.com/YOURUSERNAME/healthifyMe_v2.git
+     2. cd healthify-me
+
+2. Start node server (localhost: 3001):
+     1. npm install
+     2. npm start
+
+3. Start nextjs server (localhost:3000):
+     1. cd healthify-me-next
+     2. npm install
+     3. npm run dev
+
+4. For nodejs environment variables, create a .env file in the root directory and include the necessary variables.
 
 Summary of Fitness Tracking App:
 
@@ -50,7 +71,7 @@ Profile
 //
 //
 
-RESET-PASSWORD (advanced authentication & input validation)
+Forgot Password
 
 ![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/85ed06a8-3559-43f6-9790-e6f048b4c89e)
 
