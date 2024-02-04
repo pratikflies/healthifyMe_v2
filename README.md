@@ -1,6 +1,6 @@
 # healthifyMe_fullStack
 
-Get Started
+## Get Started
 
 Welcome to Healthify-Me! This guide will walk you through the steps to get the project up and running on your local machine for development and testing purposes.
 
@@ -11,6 +11,7 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
 ## Installation
 
 1. Start by cloning the repository to your local machine:
+     ```bash
      1. git clone https://github.com/YOURUSERNAME/healthifyMe_v2.git
      2. cd healthify-me
 
