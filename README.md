@@ -72,6 +72,9 @@ GALLERY (uploading images using multer)
 
 ![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/d9f3f338-bb41-4653-8842-e18e81b027ce)
 
+
+
+
 Storage (using MongoDB as a database to store documents in various collections)
 
 <img width="1440" alt="Screenshot 2024-02-04 at 1 35 37 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/6367e66d-71b2-4743-8a10-044b556fc10d">
