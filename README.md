@@ -1,5 +1,9 @@
 # healthifyMe_fullStack
 
+Get Started
+
+...
+
 Summary of Fitness Tracking App:
 
 Developed a comprehensive fitness tracking app with a user-friendly interface, incorporating various technologies and APIs for seamless user experience. Implemented robust signup/login system with Express Validator and Nodemailer for secure user authentication and email verification. Employed CSRF tokens to protect against cross-site request forgery. Managed user logins through sessions and cookies. Enabled profile editing and deletion. Utilized Leaflet library to render interactive map for mapping workouts, with edit and delete functionality. Implemented comprehensive dashboard for real-time tracking of goals, past and upcoming workouts, and progress. Awarded badges based on achievements. Utilized Chart.js for visualizing data. Integrated Weatherbit API for current temperature retrieval. Implemented reverse geocoding using Leaflet API for address and workout location display. Employed EJS dynamic templating engine with Node.js, HTML, CSS, and JavaScript. Utilized Express for efficient routing and parsing. Followed object-oriented programming principles for maintainable and extensible code structure. Utilized MongoDB with Mongoose ODM for data storage and management. Added photo gallery feature using Multer for users to share progress photos and view others' posts. Enhanced user engagement and motivation through visual elements and community interaction.
@@ -8,29 +12,25 @@ HOMEPAGE
 
 <img width="1440" alt="Screenshot 2024-02-04 at 1 24 21 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/9d903db7-e63b-48e7-b785-7fc33cbc6c7d">
 
-SIGNUP (with input validation)
+SIGNUP
 
-![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/4e1e2de2-9763-4d1c-9463-176d373f48f9)
+<img width="1440" alt="Screenshot 2024-02-04 at 1 26 45 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/c439448e-37f9-4aeb-be1b-8bcb8d51f19d">
 
 Sending verification emails using Nodemailer
 
 ![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/ab9995fe-71fe-4173-9e29-02c959d877f5)
 
-LOGIN (with input validation, using sessions & cookies)
+LOGIN (using JWT)
 
-![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/cf78b05e-e4e6-40b4-bd88-59a3cbfd8400)
-
-VALIDATION (using express-validator)
-
-![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/0c8e5872-5499-40f8-96b4-051e03a83bda)
+<img width="1440" alt="Screenshot 2024-02-04 at 1 27 05 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/5e4641ac-1204-4621-a237-67d81d1feff5">
 
 CONTACT-US
 
 ![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/21f7c39f-89da-49ae-aebb-2a80b7ea74be)
 
-USER-DETAILS
+PROFILE
 
-![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/09b348e0-42b6-44c9-87af-b0935bacbaa4)
+<img width="1440" alt="Screenshot 2024-02-04 at 1 28 12 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/ba3aa331-42fa-443e-81fe-991f32ebaf85">
 
 RESET-PASSWORD (advanced authentication & input validation)
 
