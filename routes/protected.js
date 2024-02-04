@@ -1,7 +1,6 @@
 const express = require("express");
 const protectedController = require("../controller/protected");
 const isAuth = require("../middleware/authMiddleware");
-const error = require("../controller/error");
 
 const router = express.Router();
 
@@ -17,8 +16,5 @@ router.post("/logout", isAuth, protectedController.postLogout);
 // router.delete("/reset", isAuth, protectedController.resetUser);
 // router.get("/gallery", isAuth, protectedController.getGallery);
 // router.post("/add-image", isAuth, protectedController.addImage);
-
-// catches pages that are not found, has to be at last 
-router.use("*", error.getError);
 
 module.exports = router;

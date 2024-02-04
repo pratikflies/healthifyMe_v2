@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import "./page.css";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import SidebarHeaderComponent from "@/components/sidebar-header";
@@ -9,6 +8,7 @@ import SidebarBodyComponent from "@/components/sidebar-body";
 import SidebarAuthComponent from "@/components/sidebar-auth";
 import SidebarFooterComponent from "@/components/sidebar-footer";
 import { LatLng, Workout, UserLocationType, LatLngArr } from "@/lib/types";
+import "./page.css";
 
 const DEFAULT_LAT = 22.6503867;
 const DEFAULT_LNG = 88.434807;
