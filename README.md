@@ -6,7 +6,7 @@ Developed a comprehensive fitness tracking app with a user-friendly interface, i
 
 HOMEPAGE
 
-![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/29b9f53a-7ddb-4ce9-805e-73a5a19d7fa1)
+<img width="1440" alt="Screenshot 2024-02-04 at 1 24 21 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/9d903db7-e63b-48e7-b785-7fc33cbc6c7d">
 
 SIGNUP (with input validation)
 
