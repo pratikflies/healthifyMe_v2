@@ -29,8 +29,6 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
 4. For nodejs environment variables, create a .env file in the root directory and include the necessary variables.
 
 ## Overview
-
-     ```bash
      • Developed a comprehensive fitness app with secure authentication, interactive maps, and real-time progress tracking, using the Factory Design Pattern for efficient backend architecture.
      • Backend: NodeJS, Express, MongoDB (Mongoose), JWT.
      • Frontend: Next.js, React, TypeScript, Tailwind CSS, CSS.
