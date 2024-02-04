@@ -31,7 +31,7 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
 ## Overview
      • Developed a comprehensive fitness app with secure authentication, interactive maps, and real-time progress tracking, using the Factory Design Pattern for efficient backend architecture.
      • Backend: NodeJS, Express, MongoDB (Mongoose), JWT.
-     • Frontend: Next.js, React, TypeScript, Tailwind CSS, CSS.
+     • Frontend: Next.js, React, TypeScript, CSS, Tailwind CSS.
 
 ## Snapshots
 
@@ -128,7 +128,7 @@ Filter by Workout type
 //
 //
 
-Switch to dark mode
+Switch to dark theme
 
 <img width="1440" alt="Screenshot 2024-02-04 at 1 34 16 PM" src="https://github.com/pratikflies/healthifyMe_v2/assets/76919061/0c120d18-817d-4840-b28e-fecfb4610015">
 
