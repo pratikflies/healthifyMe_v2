@@ -135,7 +135,7 @@ Switch to dark theme
 //
 //
 
-GALLERY (uploading images using multer)
+Gallery (uploading images using multer)
 
 ![image](https://github.com/pratikflies/healthifyMe_fullStack/assets/76919061/38d865f8-e016-45cb-beaf-401769a20464)
 
