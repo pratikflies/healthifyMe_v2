@@ -20,7 +20,7 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
      npm install
      npm start
 
-3. Start nextjs server (localhost:3000):
+3. Start nextjs server (localhost: 3000):
      ```bash
      cd healthify-me-next
      npm install
@@ -28,9 +28,13 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
 4. For nodejs environment variables, create a .env file in the root directory and include the necessary variables.
 
-Summary of Fitness Tracking App:
+## Overview
 
-Developed a comprehensive fitness tracking app with a user-friendly interface, incorporating various technologies and APIs for seamless user experience. Implemented robust signup/login system with Express Validator and Nodemailer for secure user authentication and email verification. Employed CSRF tokens to protect against cross-site request forgery. Managed user logins through sessions and cookies. Enabled profile editing and deletion. Utilized Leaflet library to render interactive map for mapping workouts, with edit and delete functionality. Implemented comprehensive dashboard for real-time tracking of goals, past and upcoming workouts, and progress. Awarded badges based on achievements. Utilized Chart.js for visualizing data. Integrated Weatherbit API for current temperature retrieval. Implemented reverse geocoding using Leaflet API for address and workout location display. Employed EJS dynamic templating engine with Node.js, HTML, CSS, and JavaScript. Utilized Express for efficient routing and parsing. Followed object-oriented programming principles for maintainable and extensible code structure. Utilized MongoDB with Mongoose ODM for data storage and management. Added photo gallery feature using Multer for users to share progress photos and view others' posts. Enhanced user engagement and motivation through visual elements and community interaction.
+• Developed a comprehensive fitness app with secure authentication, interactive maps, and real-time progress tracking, using the Factory Design Pattern for efficient backend architecture.
+• Backend: NodeJS, Express, MongoDB (Mongoose), JWT.
+• Frontend: Next.js, React, TypeScript, Tailwind CSS, CSS.
+
+## Snapshots
 
 Homepage
 
