@@ -12,17 +12,19 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
 1. Start by cloning the repository to your local machine:
      ```bash
-     1. git clone https://github.com/YOURUSERNAME/healthifyMe_v2.git
-     2. cd healthify-me
+     git clone https://github.com/YOURUSERNAME/healthifyMe_v2.git
+     cd healthify-me
 
 2. Start node server (localhost: 3001):
-     1. npm install
-     2. npm start
+     ```bash
+     npm install
+     npm start
 
 3. Start nextjs server (localhost:3000):
-     1. cd healthify-me-next
-     2. npm install
-     3. npm run dev
+     ```bash
+     cd healthify-me-next
+     npm install
+     npm run dev
 
 4. For nodejs environment variables, create a .env file in the root directory and include the necessary variables.
 
