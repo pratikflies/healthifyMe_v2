@@ -30,9 +30,10 @@ Before you begin, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
 ## Overview
 
-• Developed a comprehensive fitness app with secure authentication, interactive maps, and real-time progress tracking, using the Factory Design Pattern for efficient backend architecture.
-• Backend: NodeJS, Express, MongoDB (Mongoose), JWT.
-• Frontend: Next.js, React, TypeScript, Tailwind CSS, CSS.
+     ```bash
+     • Developed a comprehensive fitness app with secure authentication, interactive maps, and real-time progress tracking, using the Factory Design Pattern for efficient backend architecture.
+     • Backend: NodeJS, Express, MongoDB (Mongoose), JWT.
+     • Frontend: Next.js, React, TypeScript, Tailwind CSS, CSS.
 
 ## Snapshots
 
